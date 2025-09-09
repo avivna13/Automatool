@@ -412,18 +412,41 @@ class ProcessManager:
             return False
    
     def change_vpn_region(self, new_country: str) -> bool:
-        """Change VPN region during execution (placeholder for now)."""
+        """Change VPN region during execution."""
         try:
-            # For now, this is a placeholder - in a real implementation,
-            # this would communicate with the running VPN-Frida process
-            # to change regions dynamically
-           
             self.add_log(f"🔄 VPN region change requested to: {new_country}")
-            self.add_log(f"ℹ️ Note: Region change during execution not yet implemented")
-            self.add_log(f"ℹ️ You may need to restart the automation with the new country")
-           
-            # Return True to indicate the request was received
-            return True
+            
+            # Import VPN controller to change region
+            import sys
+            import os
+            
+            # Add the automations directory to Python path
+            automations_path = os.path.join(self.automatool_path, "scripts", "automations")
+            if automations_path not in sys.path:
+                sys.path.insert(0, automations_path)
+            
+            try:
+                from vpn_controllers import get_vpn_controller
+                
+                # Get NordVPN controller and attempt to connect to new country
+                vpn_controller = get_vpn_controller("nordvpn")
+                
+                self.add_log(f"🌐 Connecting to VPN in {new_country}...")
+                success = vpn_controller.connect(new_country)
+                
+                if success:
+                    self.add_log(f"✅ Successfully changed VPN region to {new_country}")
+                    self.add_log(f"ℹ️ The running Frida process will continue with the new VPN connection")
+                    return True
+                else:
+                    self.add_log(f"❌ Failed to connect to VPN in {new_country}")
+                    self.add_log(f"ℹ️ The automation continues with the current VPN connection")
+                    return False
+                    
+            except ImportError as e:
+                self.add_log(f"❌ VPN controller import failed: {e}")
+                self.add_log(f"ℹ️ Make sure VPN controllers are properly installed")
+                return False
            
         except Exception as e:
             self.add_log(f"❌ Failed to change VPN region: {e}")
