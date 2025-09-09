@@ -436,8 +436,36 @@ class ProcessManager:
                 
                 if success:
                     self.add_log(f"✅ Successfully changed VPN region to {new_country}")
-                    self.add_log(f"ℹ️ The running Frida process will continue with the new VPN connection")
-                    return True
+                    self.add_log(f"🔄 Restarting automation to run from new location...")
+                    
+                    # Store current process info before terminating
+                    if self.current_process:
+                        package_name = self._extract_package_name_from_process()
+                        
+                        # Terminate current process
+                        self.add_log(f"🛑 Terminating current process...")
+                        self.kill_current_process()
+                        
+                        # Wait a moment for cleanup
+                        import time
+                        time.sleep(2)
+                        
+                        # Restart with new country
+                        if package_name:
+                            self.add_log(f"🚀 Restarting VPN-Frida with {package_name} in {new_country}")
+                            restart_success = self.start_vpn_frida(package_name, new_country)
+                            if restart_success:
+                                self.add_log(f"✅ Successfully restarted automation in {new_country}")
+                                return True
+                            else:
+                                self.add_log(f"❌ Failed to restart automation")
+                                return False
+                        else:
+                            self.add_log(f"❌ Could not extract package name for restart")
+                            return False
+                    else:
+                        self.add_log(f"❌ No current process to restart")
+                        return False
                 else:
                     self.add_log(f"❌ Failed to connect to VPN in {new_country}")
                     self.add_log(f"ℹ️ The automation continues with the current VPN connection")
@@ -451,6 +479,21 @@ class ProcessManager:
         except Exception as e:
             self.add_log(f"❌ Failed to change VPN region: {e}")
             return False
+
+    def _extract_package_name_from_process(self) -> str:
+        """Extract package name from current process command."""
+        try:
+            if self.current_process and 'command' in self.current_process:
+                command = self.current_process['command']
+                # Look for --package-name argument in the command
+                parts = command.split()
+                for i, part in enumerate(parts):
+                    if part == '--package-name' and i + 1 < len(parts):
+                        return parts[i + 1]
+            return None
+        except Exception as e:
+            self.add_log(f"❌ Error extracting package name: {e}")
+            return None
 
     def execute_blutter_analysis(self, output_dir, verbose=True):
         """Execute Blutter Flutter analysis on libapp.so files."""
