@@ -1,0 +1,199 @@
+name: Test Suite
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test-automatool:
+    name: Test Automatool Framework
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.9, 3.10, 3.11]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-automatool-${{ hashFiles('automatool/automatool/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-automatool-
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y openjdk-11-jdk android-tools-adb
+        # Install additional tools that might be needed for APK analysis
+        sudo apt-get install -y binutils file
+
+    - name: Install Python dependencies for automatool
+      working-directory: ./automatool/automatool
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run automatool tests
+      working-directory: ./automatool/automatool
+      run: |
+        # Run tests with pytest, excluding slow/integration tests that might need external tools
+        python -m pytest tests/ -v --tb=short \
+          --ignore=tests/test_mobsf_integration.py \
+          --ignore=tests/test_mobsf_standalone.py \
+          --ignore=tests/test_automatool_integration.py \
+          --ignore=tests/test_cleanup_integration.py \
+          --ignore=tests/test_vscode_process_termination.py \
+          -m "not slow"
+
+    - name: Run automatool unit tests with coverage
+      working-directory: ./automatool/automatool
+      run: |
+        python -m pytest tests/ --cov=src --cov-report=xml --cov-report=term \
+          --ignore=tests/test_mobsf_integration.py \
+          --ignore=tests/test_mobsf_standalone.py \
+          --ignore=tests/test_automatool_integration.py \
+          --ignore=tests/test_cleanup_integration.py \
+          --ignore=tests/test_vscode_process_termination.py \
+          -m "not slow"
+
+    - name: Upload automatool coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./automatool/automatool/coverage.xml
+        flags: automatool
+        name: automatool-coverage
+
+  test-automatool-ui:
+    name: Test Automatool Web UI
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.9, 3.10, 3.11]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-ui-${{ hashFiles('automatool_ui/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-ui-
+
+    - name: Install Python dependencies for automatool_ui
+      working-directory: ./automatool_ui
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run automatool_ui tests
+      working-directory: ./automatool_ui
+      run: |
+        # Run fast tests first
+        python -m pytest tests/ -v --tb=short -m "not slow"
+
+    - name: Run automatool_ui tests with coverage
+      working-directory: ./automatool_ui
+      run: |
+        python -m pytest tests/ --cov=utils --cov=app --cov-report=xml --cov-report=term -m "not slow"
+
+    - name: Upload automatool_ui coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./automatool_ui/coverage.xml
+        flags: automatool-ui
+        name: automatool-ui-coverage
+
+  test-integration:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: [test-automatool, test-automatool-ui]
+    if: github.event_name == 'push' # Only run integration tests on push, not PR
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.11
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y openjdk-11-jdk android-tools-adb binutils file
+
+    - name: Install automatool dependencies
+      working-directory: ./automatool/automatool
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Install automatool_ui dependencies
+      working-directory: ./automatool_ui
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run integration tests
+      working-directory: ./automatool_ui
+      run: |
+        # Run integration tests that require both components
+        python -m pytest tests/test_integration.py -v --tb=short -m "not slow"
+
+    - name: Test automatool CLI integration
+      working-directory: ./automatool/automatool
+      run: |
+        # Test basic CLI functionality
+        python src/automatool.py --help
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: [test-automatool, test-automatool-ui]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.11
+
+    - name: Install bandit for security scanning
+      run: |
+        python -m pip install --upgrade pip
+        pip install bandit[toml]
+
+    - name: Run security scan on automatool
+      run: |
+        bandit -r automatool/automatool/src/ -f json -o bandit-automatool.json || true
+        bandit -r automatool/automatool/src/ || true
+
+    - name: Run security scan on automatool_ui
+      run: |
+        bandit -r automatool_ui/ -f json -o bandit-ui.json || true
+        bandit -r automatool_ui/ || true
+
+    - name: Upload security scan results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: security-scan-results
+        path: bandit-*.json
