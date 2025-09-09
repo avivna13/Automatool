@@ -273,23 +273,41 @@ def validate_package_name(package_name, device_id=None, verbose=False):
 def prepare_frida_scripts(scripts, verbose=False):
     """Prepare and validate Frida script paths."""
     if not scripts:
-        # Use default main_hook.js - look for it in the project
-        current_dir = Path(__file__).parent.parent.parent.parent.parent  # Go up to project root
-        possible_paths = [
-            current_dir / "automatool" / "src" / "scripts" / "frida" / "main_hook.js",
-            current_dir / "FridaOS" / "FridaOS" / "src" / "backend" / "scripts" / "frida" / "main_hook.js",
-            Path.cwd() / "main_hook.js"
+        # Use default Frida scripts - look for them in the project
+        script_dir = Path(__file__).parent.parent / "frida"
+        
+        # Try multiple default script options
+        default_script_candidates = [
+            script_dir / "main_hook_js.js",  # Actual filename found
+            script_dir / "main_hook.js",     # Expected filename
+            script_dir / "yairhook.js",      # Alternative main script
+            script_dir / "script.js"         # Another alternative
         ]
-       
-        for path in possible_paths:
+        
+        if verbose:
+            print(f"[DEBUG] Looking for default scripts in: {script_dir}")
+        
+        for path in default_script_candidates:
             if path.exists():
                 scripts = [str(path)]
                 if verbose:
                     print(f"[DEBUG] Using default script: {path}")
                 break
         else:
-            print("[ERROR] No Frida scripts provided and default main_hook.js not found")
-            return None
+            # If no single default script found, try to use all available scripts
+            available_scripts = list(script_dir.glob("*.js"))
+            if available_scripts:
+                # Use the first available script as primary
+                scripts = [str(available_scripts[0])]
+                if verbose:
+                    print(f"[DEBUG] Using first available script: {available_scripts[0]}")
+                    print(f"[DEBUG] Other available scripts: {[str(s) for s in available_scripts[1:]]}")
+            else:
+                print("[ERROR] No Frida scripts provided and no default scripts found")
+                if verbose:
+                    print(f"[DEBUG] Searched in directory: {script_dir}")
+                    print(f"[DEBUG] Directory exists: {script_dir.exists()}")
+                return None
    
     validated_scripts = []
     for script in scripts:

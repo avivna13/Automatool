@@ -404,8 +404,8 @@ class ProcessManager:
            
             self.add_log(f"🚀 Starting VPN-Frida automation for {package_name} in {country}")
            
-            # Run the process
-            return self._run_process(cmd, f"VPN-Frida ({package_name})", self.automatool_path, timeout=self.default_timeout)
+            # Run the process without timeout (VPN-Frida should run continuously)
+            return self._run_process(cmd, f"VPN-Frida ({package_name})", self.automatool_path, timeout=None)
            
         except Exception as e:
             self.add_log(f"❌ Failed to start VPN-Frida: {e}")
