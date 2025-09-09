@@ -180,16 +180,6 @@ def main():
         print(f"❌ ERROR: Failed to track reviews files: {e}")
         if args.verbose:
             print(f"[DEBUG] Exception details: {type(e).__name__}: {e}")
-
-    # Generate comprehensive app intelligence report
-    app_intelligence_report_path = merge_app_intelligence(package_name, args.directory, args.verbose)
-    if app_intelligence_report_path:
-        try:
-            resource_tracker.add_file(app_intelligence_report_path)
-        except Exception as e:
-            print(f"❌ ERROR: Failed to track app intelligence report: {e}")
-            if args.verbose:
-                print(f"[DEBUG] Exception details: {type(e).__name__}: {e}")
    
     # Copy Frida scripts to target directory
     copy_frida_scripts(args.directory, args.verbose)
