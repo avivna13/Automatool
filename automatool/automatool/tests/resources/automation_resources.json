@@ -1,0 +1,15 @@
+{
+  "runs": [],
+  "current_run": {
+    "timestamp": "2025-01-01T00:00:00.000000",
+    "package_name": null,
+    "apk_filename": null,
+    "apk_installed": false,
+    "pid": {
+      "jadx": null,
+      "vscode": null
+    },
+    "files": [],
+    "dirs": []
+  }
+}

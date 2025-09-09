@@ -1,0 +1,20 @@
+=== MobSF Analysis Summary ===
+
+App Name: Reversers Home Assignment
+Package: N/A
+Version: 1.0
+File Name: test.apk
+Hash: N/A
+
+=== Security Issues ===
+High Risk Issues: 0
+Warning Issues: 3
+Info Issues: 1
+Secure Items: 1
+
+=== Privacy Trackers ===
+Detected Trackers: 0
+Total Trackers Checked: 432
+
+=== Full Report ===
+See analysis_report.json for complete details

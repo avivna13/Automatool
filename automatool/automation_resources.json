@@ -1,0 +1,27 @@
+{
+  "runs": [],
+  "current_run": {
+    "timestamp": "2025-09-06T08:28:10.421210",
+    "package_name": "com.betmakers.picnicbet",
+    "apk_filename": "com.betmakers.picnicbet.apk",
+    "apk_installed": false,
+    "pid": {
+      "jadx": 56804,
+      "vscode": 56805
+    },
+    "files": [
+      "/home/kali/Desktop/apks/Burst34/com.betmakers.picnicbet/reviews.json",
+      "/home/kali/Desktop/apks/Burst34/com.betmakers.picnicbet/reviews_summary.txt",
+      "/home/kali/Desktop/apks/Burst34/com.betmakers.picnicbet/app_intelligence_report.txt",
+      "/home/kali/Desktop/apks/Burst34/com.betmakers.picnicbet/yara.json",
+      "/home/kali/Desktop/apks/Burst34/com.betmakers.picnicbet/yara_summary.txt",
+      "/home/kali/Desktop/apks/Burst34/com.betmakers.picnicbet/prompts/research_plan.txt",
+      "/home/kali/Desktop/apks/Burst34/com.betmakers.picnicbet/apk_unmask_output.txt",
+      "/home/kali/Desktop/apks/Burst34/com.betmakers.picnicbet/apk_unmask_output_enhanced.txt"
+    ],
+    "dirs": [
+      "/home/kali/Desktop/apks/Burst34/com.betmakers.picnicbet/frida_scripts",
+      "/home/kali/Desktop/apks/Burst34/com.betmakers.picnicbet/prompts"
+    ]
+  }
+}

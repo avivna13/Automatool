@@ -1,0 +1,11 @@
+given an application that has the following:
+
+reviews:
+{reviews}
+
+yara output:
+{yara_output}
+
+Plan a research strategy: how to proceed with the research dynamically and statically? 
+provide some patterns to look for in the code and Frida scripts that can be useful to inspect it, given all the details
+

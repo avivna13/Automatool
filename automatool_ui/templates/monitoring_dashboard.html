@@ -1,0 +1,381 @@
+{% extends "base.html" %}
+
+{% block title %}Toll Fraud Monitoring Dashboard{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+    .card {
+        border: none;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
+        border-radius: 0.5rem;
+        transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
+    }
+    .card:hover {
+        box-shadow: 0 0.8rem 1.5rem rgba(0, 0, 0, 0.1);
+        transform: translateY(-3px);
+    }
+    .card-header {
+        background-color: #ffffff;
+        border-bottom: 1px solid #e9ecef;
+        font-weight: 600;
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+    }
+    .alert {
+        border-radius: 0.375rem;
+    }
+    .table-responsive {
+        max-height: 450px;
+        border-radius: 0.375rem;
+        box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+    }
+    #results code {
+        white-space: normal;
+        word-break: break-all;
+        background-color: #e9ecef;
+        padding: 0.2em 0.4em;
+        border-radius: 3px;
+    }
+    .badge {
+        font-size: 85%;
+    }
+</style>
+
+<div class="container mt-4 pb-5">
+    <h1 class="mb-4 text-center">🔍 Toll Fraud Monitoring Dashboard</h1>
+    
+    <div class="row">
+        <div class="col-lg-6">
+            <!-- System Status -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">📊 System Status</h5>
+                </div>
+                <div class="card-body">
+                    <div id="system-status" class="alert alert-info">
+                        <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                        Checking system status...
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <!-- Device Information -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">📱 Device Information</h5>
+                </div>
+                <div class="card-body">
+                    <div id="device-info" class="alert alert-secondary">
+                        <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                        Loading device information...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Package Detection Status -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">📦 Package Detection</h5>
+            <button class="btn btn-sm btn-outline-primary" onclick="checkPackageName()">
+                🔄 Refresh
+            </button>
+        </div>
+        <div class="card-body">
+            <div id="package-status" class="alert alert-info">
+                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                Detecting package name...
+            </div>
+        </div>
+    </div>
+
+    <!-- Monitoring Controls -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">🎯 Monitoring Controls</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <label for="package-name" class="form-label">Target App Package Name:</label>
+                    <input type="text" class="form-control" id="package-name" 
+                           placeholder="com.example.app" value="">
+                    <div class="form-text" id="package-help-text">Enter the package name of the app to monitor</div>
+                </div>
+                <div class="col-md-6 d-flex align-items-end">
+                    <button class="btn btn-primary w-100 me-2" onclick="monitorNotifications()" id="monitor-btn" disabled>
+                        📱 Monitor Notifications
+                    </button>
+                    <button class="btn btn-success w-100" onclick="collectData()" id="collect-btn" disabled>
+                        📊 Collect Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Display -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">📋 Monitoring Results</h5>
+        </div>
+        <div class="card-body">
+            <div id="results" class="alert alert-light">
+                <em>No monitoring results yet. Use the controls above to start monitoring.</em>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Check system status on page load
+document.addEventListener('DOMContentLoaded', function() {
+    checkSystemStatus();
+    getDeviceInfo();
+    checkPackageName();
+});
+
+// Check monitoring system status
+async function checkSystemStatus() {
+    try {
+        const response = await fetch('/api/monitoring/status');
+        const data = await response.json();
+        
+        const statusDiv = document.getElementById('system-status');
+        if (data.available) {
+            if (data.adb_connected) {
+                statusDiv.className = 'alert alert-success';
+                statusDiv.innerHTML = '✅ <strong>Monitoring System Ready</strong><br>ADB connected and ready for monitoring';
+            } else {
+                statusDiv.className = 'alert alert-warning';
+                statusDiv.innerHTML = '⚠️ <strong>Monitoring System Ready</strong><br>ADB not connected - connect a device to start monitoring';
+            }
+        } else {
+            statusDiv.className = 'alert alert-danger';
+            statusDiv.innerHTML = '❌ <strong>Monitoring System Unavailable</strong><br>' + data.message;
+        }
+    } catch (error) {
+        const statusDiv = document.getElementById('system-status');
+        statusDiv.className = 'alert alert-danger';
+        statusDiv.innerHTML = '❌ <strong>Error</strong><br>Failed to check system status: ' + error.message;
+    }
+}
+
+// Get device information
+async function getDeviceInfo() {
+    try {
+        const response = await fetch('/api/monitoring/device-info');
+        const data = await response.json();
+        
+        const deviceDiv = document.getElementById('device-info');
+        if (data.success) {
+            if (data.data.error) {
+                deviceDiv.className = 'alert alert-warning';
+                deviceDiv.innerHTML = '⚠️ <strong>Device Info</strong><br>' + data.data.error;
+            } else {
+                deviceDiv.className = 'alert alert-success';
+                deviceDiv.innerHTML = `
+                    ✅ <strong>Device Connected</strong><br>
+                    Model: ${data.data.model}<br>
+                    Android Version: ${data.data.android_version}
+                `;
+            }
+        } else {
+            deviceDiv.className = 'alert alert-danger';
+            deviceDiv.innerHTML = '❌ <strong>Device Info</strong><br>' + data.message;
+        }
+    } catch (error) {
+        const deviceDiv = document.getElementById('device-info');
+        deviceDiv.className = 'alert alert-danger';
+        deviceDiv.innerHTML = '❌ <strong>Error</strong><br>Failed to get device info: ' + error.message;
+    }
+}
+
+// Check and extract package name from current app state
+async function checkPackageName() {
+    try {
+        const packageStatusDiv = document.getElementById('package-status');
+        const packageInput = document.getElementById('package-name');
+        const monitorBtn = document.getElementById('monitor-btn');
+        const collectBtn = document.getElementById('collect-btn');
+        const packageHelpText = document.getElementById('package-help-text');
+        
+        // First check if we have an APK in the current state
+        const statusResponse = await fetch('/api/status');
+        const statusData = await statusResponse.json();
+        
+        if (statusData.state && statusData.state.APK_PATH && statusData.state.setup_complete) {
+            // We have an APK, try to extract package name
+            packageStatusDiv.className = 'alert alert-info';
+            packageStatusDiv.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Extracting package name from APK...';
+            
+            const packageResponse = await fetch('/api/get-package-name', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    apk_path: statusData.state.APK_PATH
+                })
+            });
+            
+            const packageResult = await packageResponse.json();
+            
+            if (packageResult.success && packageResult.package_name) {
+                // Package name extracted successfully
+                packageInput.value = packageResult.package_name;
+                packageInput.readOnly = true;
+                
+                packageStatusDiv.className = 'alert alert-success';
+                packageStatusDiv.innerHTML = `✅ <strong>Package Detected</strong><br>${packageResult.package_name}`;
+                
+                packageHelpText.textContent = 'Package name automatically detected from uploaded APK';
+                
+                // Enable monitoring buttons
+                monitorBtn.disabled = false;
+                collectBtn.disabled = false;
+                
+            } else {
+                // Package extraction failed
+                packageStatusDiv.className = 'alert alert-warning';
+                packageStatusDiv.innerHTML = `⚠️ <strong>Package Detection Failed</strong><br>${packageResult.message}<br>Please enter package name manually.`;
+                
+                packageInput.placeholder = 'Enter package name manually (e.g., com.example.app)';
+                packageHelpText.textContent = 'Package detection failed. Please enter the package name manually.';
+                
+                // Enable input for manual entry
+                packageInput.readOnly = false;
+                packageInput.addEventListener('input', function() {
+                    const hasValue = this.value.trim().length > 0;
+                    monitorBtn.disabled = !hasValue;
+                    collectBtn.disabled = !hasValue;
+                });
+            }
+            
+        } else {
+            // No APK uploaded yet
+            packageStatusDiv.className = 'alert alert-warning';
+            packageStatusDiv.innerHTML = '⚠️ <strong>No APK Uploaded</strong><br>Upload an APK file first to auto-detect package name, or enter it manually.';
+            
+            packageInput.placeholder = 'Enter package name manually (e.g., com.example.app)';
+            packageHelpText.textContent = 'No APK uploaded. Please enter the package name manually.';
+            
+            // Enable input for manual entry
+            packageInput.readOnly = false;
+            packageInput.addEventListener('input', function() {
+                const hasValue = this.value.trim().length > 0;
+                monitorBtn.disabled = !hasValue;
+                collectBtn.disabled = !hasValue;
+            });
+        }
+        
+    } catch (error) {
+        const packageStatusDiv = document.getElementById('package-status');
+        packageStatusDiv.className = 'alert alert-danger';
+        packageStatusDiv.innerHTML = '❌ <strong>Error</strong><br>Failed to check package name: ' + error.message;
+        
+        // Fallback to manual input
+        const packageInput = document.getElementById('package-name');
+        const packageHelpText = document.getElementById('package-help-text');
+        
+        packageInput.placeholder = 'Enter package name manually (e.g., com.example.app)';
+        packageHelpText.textContent = 'Error occurred. Please enter the package name manually.';
+        packageInput.readOnly = false;
+    }
+}
+
+// Monitor notifications for a target app
+async function monitorNotifications() {
+    const packageName = document.getElementById('package-name').value.trim();
+    if (!packageName) {
+        alert('Please enter a package name');
+        return;
+    }
+    
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.className = 'alert alert-info';
+    resultsDiv.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Monitoring notifications...';
+    
+    try {
+        const response = await fetch(`/api/monitoring/notifications?package=${encodeURIComponent(packageName)}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            displayResults(data.data, 'Notification Monitoring Results');
+        } else {
+            resultsDiv.className = 'alert alert-danger';
+            resultsDiv.innerHTML = '❌ <strong>Error</strong><br>' + data.message;
+        }
+    } catch (error) {
+        resultsDiv.className = 'alert alert-danger';
+        resultsDiv.innerHTML = '❌ <strong>Error</strong><br>Failed to monitor notifications: ' + error.message;
+    }
+}
+
+// Collect data from a target app
+async function collectData() {
+    const packageName = document.getElementById('package-name').value.trim();
+    if (!packageName) {
+        alert('Please enter a package name');
+        return;
+    }
+    
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.className = 'alert alert-info';
+    resultsDiv.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Collecting data...';
+    
+    try {
+        const response = await fetch(`/api/monitoring/collect-data?package=${encodeURIComponent(packageName)}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            displayResults(data.data, 'Data Collection Results');
+        } else {
+            resultsDiv.className = 'alert alert-danger';
+            resultsDiv.innerHTML = '❌ <strong>Error</strong><br>' + data.message;
+        }
+    } catch (error) {
+        resultsDiv.className = 'alert alert-danger';
+        resultsDiv.innerHTML = '❌ <strong>Error</strong><br>Failed to collect data: ' + error.message;
+    }
+}
+
+// Display monitoring results
+function displayResults(data, title) {
+    const resultsDiv = document.getElementById('results');
+    
+    if (data.error) {
+        resultsDiv.className = 'alert alert-danger';
+        resultsDiv.innerHTML = `<h6>❌ Error</h6><p>${data.error}</p>`;
+        return;
+    }
+
+    resultsDiv.className = 'alert alert-light p-3';
+    
+    let html = `<h6>✅ ${title}</h6>`;
+    html += `<p><strong>Target App:</strong> ${data.target_app}</p>`;
+    html += `<p><strong>Timestamp:</strong> ${new Date(data.timestamp).toLocaleString()}</p>`;
+    
+    if (data.raw_output && data.raw_output.trim() !== '') {
+        html += '<h6>📋 Raw Command Output:</h6>';
+        html += `<pre class="bg-dark text-light p-3 rounded" style="white-space: pre-wrap; word-break: break-all;"><code>${escapeHtml(data.raw_output)}</code></pre>`;
+    } else {
+        html += '<p><em>No output was returned from the command.</em></p>';
+    }
+    
+    resultsDiv.innerHTML = html;
+}
+
+function escapeHtml(unsafe) {
+    return unsafe
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
+ }
+</script>
+{% endblock %}

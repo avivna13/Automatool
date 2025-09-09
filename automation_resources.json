@@ -1,0 +1,18 @@
+{
+  "runs": [],
+  "current_run": {
+    "timestamp": "2025-09-06T08:28:50.701713",
+    "package_name": null,
+    "apk_filename": null,
+    "apk_installed": false,
+    "pid": {
+      "jadx": null,
+      "vscode": null
+    },
+    "files": [
+      "/home/kali/Desktop/apks/Burst34/com.betmakers.picnicbet/base64_scan_results_20250906_082850.json",
+      "/home/kali/Desktop/apks/Burst34/com.betmakers.picnicbet/base64_scan_summary_20250906_082850.txt"
+    ],
+    "dirs": []
+  }
+}

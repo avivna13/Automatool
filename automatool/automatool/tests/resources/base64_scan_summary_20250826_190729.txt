@@ -1,0 +1,222 @@
+Base64 String Detection Results
+Generated: 2025-08-26 19:07:29
+Directory Scanned: tests/resources
+============================================================
+
+SCAN SUMMARY:
+  Files Scanned: 1
+  Strings Found: 26
+  Files with Strings: 1
+
+DETAILED RESULTS:
+
+📁 File: tests\resources\d1.java
+   Strings Found: 26
+
+   String 1:
+     Length: 10924 characters
+     Decoded Size: 8192 bytes
+     Confidence: 0.950
+     Entropy: 5.95
+     Category: 💾 LARGE BLOB
+     Preview: UEsDBBQACAgIAFlwDFsAAAAAAAAAAAAAAAAJAAAAbGliZHBuLnNv7F17QNVF9v9eQLmAJj5KQ3fV1QrUCu69KPTYMLVArewblbWV...
+
+   String 2:
+     Length: 10924 characters
+     Decoded Size: 8192 bytes
+     Confidence: 0.950
+     Entropy: 5.97
+     Category: 💾 LARGE BLOB
+     Preview: H8X2YaYaz03Mv5Pi3+DGsYr/j67dU3wmMJ8++n0kln+m4kN/I5b213r+A2su/osbbyv+tzP/coV7WJ+7KHwU24diHT+znTmk9CHS...
+
+   String 3:
+     Length: 10924 characters
+     Decoded Size: 8192 bytes
+     Confidence: 0.950
+     Entropy: 5.95
+     Category: 💾 LARGE BLOB
+     Preview: e27J9Ijthr7CNKyFQ89nOp3pK0zDWnI90+lMX2EaFsn1TKdHbi99JXL7D+FWLyp3QxoZlntuQ3jY9jnYZ6WQye6zrcqyiFw7C/m6...
+
+   String 4:
+     Length: 10924 characters
+     Decoded Size: 8192 bytes
+     Confidence: 0.950
+     Entropy: 5.98
+     Category: 💾 LARGE BLOB
+     Preview: R0aY0gQ8/MU/WrVNbgeMaKv9KvhKsea/Co4R8TJfBXcQttqm3nuxOUYGLNoCXoRHNfYpxrzSRkn7427hL/1h1/IFe9RXco/Kwjtn...
+
+   String 5:
+     Length: 10924 characters
+     Decoded Size: 8192 bytes
+     Confidence: 0.950
+     Entropy: 5.98
+     Category: 💾 LARGE BLOB
+     Preview: z70Ss/WRn72m9/7ZKr0PjiVbt+pVUdL2T9n9iNojY3HPSr2rmWFSB1x5mU/cWpFcj4/SPnla6mEiBsuu4rdy5VpgTHlmmKT/NOCf...
+
+   String 6:
+     Length: 10924 characters
+     Decoded Size: 8192 bytes
+     Confidence: 0.950
+     Entropy: 5.97
+     Category: 💾 LARGE BLOB
+     Preview: iL4x1hYsUrJtMWBe3lPaeitiPHF2779PWI/NrMtnjF0ra/xpXX/Bn/alv6INWbNJF/xpOmTYcUu0kUNepM4lZL4htrAIvzUvFK/q...
+
+   String 7:
+     Length: 10924 characters
+     Decoded Size: 8192 bytes
+     Confidence: 0.950
+     Entropy: 5.97
+     Category: 💾 LARGE BLOB
+     Preview: skbcqA1CHxT4UPrg5hnvTZX6IHCz37mW+qCixYiIi+uvPL/jRlXH5n5lS+haVT+Sfoj/JFi24FohLYMOf38Rfn7G1DJOzqjfIvzA...
+
+   String 8:
+     Length: 10924 characters
+     Decoded Size: 8192 bytes
+     Confidence: 0.950
+     Entropy: 5.97
+     Category: 💾 LARGE BLOB
+     Preview: HPHor4iHm+BX9V0omD+Dfx78ZW26vDhbrEwrjd8m1bcvyIJxwv2US857eLNLJB+0r4n4u1JmDT+38lutPG2F8nWXrag7Juqs1oJJ...
+
+   String 9:
+     Length: 10924 characters
+     Decoded Size: 8192 bytes
+     Confidence: 0.950
+     Entropy: 5.97
+     Category: 💾 LARGE BLOB
+     Preview: 5AnfM97Y9qFPWR91y4vGvCZwHYFDq85EHy60nQb6sk22Je0eaOnAWG25S2NjG+ha4lzGbMA79awdPGS7WsVWGmJf58EZwj5n9Tmx...
+
+   String 10:
+     Length: 10924 characters
+     Decoded Size: 8192 bytes
+     Confidence: 0.950
+     Entropy: 5.97
+     Category: 💾 LARGE BLOB
+     Preview: m8QlV/HaPfKqHbJEfrVBnt4B7NQdfsBKvVFhjiUKpqQPlV46CHpogIdjzgNNtuNd7k95EDqI996BHtpi5I7P8UHM/f7Ap26nUcdi...
+
+   String 11:
+     Length: 10924 characters
+     Decoded Size: 8192 bytes
+     Confidence: 0.950
+     Entropy: 5.97
+     Category: 💾 LARGE BLOB
+     Preview: plmnihntZonKd/NE7N0TxN0vjRK+3+aKl25ZZJx4ZI1x8tFVxsNxJUbs7EVGfNOlRsYUt0FdCfUYba/vUBg3YnEPj9T1e3RsK2Mk...
+
+   String 12:
+     Length: 10924 characters
+     Decoded Size: 8192 bytes
+     Confidence: 0.950
+     Entropy: 5.97
+     Category: 💾 LARGE BLOB
+     Preview: XPd5u+D1QNiNzvjbD3/j8bcv/rbE3/H4G2Mp+7ZzXxfroTy8BjTPbhuip7a7Vsg49ZY21wtZp/6S/qxTUhI1uBI2yU85pgxzvS8B...
+
+   String 13:
+     Length: 10924 characters
+     Decoded Size: 8192 bytes
+     Confidence: 0.950
+     Entropy: 5.97
+     Category: 💾 LARGE BLOB
+     Preview: o3FG1+ldGqVrjsvzriaZ/aHvnj9PFo4n1VnC9tawOf3+P/a+OzzKKn17JqHMhECAAIEQBMSSGRF1LRixJNgyoKKHKE1XFHdNiLj6...
+
+   String 14:
+     Length: 10924 characters
+     Decoded Size: 8192 bytes
+     Confidence: 0.950
+     Entropy: 5.97
+     Category: 💾 LARGE BLOB
+     Preview: 8Hpp3krjwS/XGt0mzTd6Y5yM7dif43ueF+WibfqXtE/BmO3FVhVnmxOtYreDMduJOj9AUnYHXbOLMds/aB+4OdqHUuaYYvx0dNDv...
+
+   String 15:
+     Length: 10924 characters
+     Decoded Size: 8192 bytes
+     Confidence: 0.950
+     Entropy: 5.97
+     Category: 💾 LARGE BLOB
+     Preview: D88iE2erFQi7k9xrqaTfmNM155YDfgXgdUGA12a9YNj3UF7bYNMyYdNo802cOfc9X4c8l5Z6lhbsezlk0vLn359/f/79+ffn359/...
+
+   String 16:
+     Length: 10924 characters
+     Decoded Size: 8192 bytes
+     Confidence: 0.950
+     Entropy: 5.98
+     Category: 💾 LARGE BLOB
+     Preview: xaknYAVIV9j9fI6Att5IlkVYjQvjtceCSs245u9viii1/6GVG0fx3LhQqW0DXXYtiNcaczoSJ8CHL6rlulf160c1r/FFNapH8fcx...
+
+   String 17:
+     Length: 10924 characters
+     Decoded Size: 8192 bytes
+     Confidence: 0.950
+     Entropy: 5.98
+     Category: 💾 LARGE BLOB
+     Preview: TQ9dmcbfLJVnKI0L5FnqAfCpOcD6mhlnzzPO/DagfSPhU1divndjvk1X4Qf0SrTfUM4zd4nTevRprwTsBU7+h9POK/Bg7DDAcYyN...
+
+   String 18:
+     Length: 10924 characters
+     Decoded Size: 8192 bytes
+     Confidence: 0.950
+     Entropy: 5.97
+     Category: 💾 LARGE BLOB
+     Preview: y3SeGweh07y0Q+ibwMdKvgdc5sl9I8lxdqqSdjxbhb0XwNyyoT/aoG9zwJdO2Acq/JfOArkvl0Pekw2q3Sbqppgfq5wqV3xGnchd...
+
+   String 19:
+     Length: 10924 characters
+     Decoded Size: 8192 bytes
+     Confidence: 0.950
+     Entropy: 5.97
+     Category: 💾 LARGE BLOB
+     Preview: EOKkowL/Dn0Nz7ljLitlIifRB+MwqNrRu4GnCxF3TBftVMx7UtUMZigT7RWDMY73Ta4LX6azCycRk5ZJrmEkt4j5S8tETqv3q7Az...
+
+   String 20:
+     Length: 10924 characters
+     Decoded Size: 8192 bytes
+     Confidence: 0.950
+     Entropy: 5.98
+     Category: 💾 LARGE BLOB
+     Preview: WbumWHwZfMt/0/lZeV6TWJ/tiedH6tJYbo8t8p9ry8bcaSy8teOGx4lU825kabzuPblA5ASafd947Ujvq6sdyVLVjmT1OpRXXTuS...
+
+   String 21:
+     Length: 10924 characters
+     Decoded Size: 8192 bytes
+     Confidence: 0.950
+     Entropy: 5.97
+     Category: 💾 LARGE BLOB
+     Preview: Krv31jSWvHgjt4U2PFf/iLBxl+CXx8Muun9ZzoyDxHjXU93FzXOY8Z+i7mI87KJX9Xsq7JV5/1Jmuy2wV7ZbQcAWqvu1Ur+/0NpU...
+
+   String 22:
+     Length: 10924 characters
+     Decoded Size: 8192 bytes
+     Confidence: 0.950
+     Entropy: 5.97
+     Category: 💾 LARGE BLOB
+     Preview: gnA9TVpa/Icy+va3zRb2jWacsyc36HoI9zktfkI+7vP0myI811p6XuZgLrpM/x33eyx+geHvZWSDR4Afx31m/809U4KuHpV45OpK...
+
+   String 23:
+     Length: 10924 characters
+     Decoded Size: 8192 bytes
+     Confidence: 0.950
+     Entropy: 5.96
+     Category: 💾 LARGE BLOB
+     Preview: tWNGzhL+EVNFiWOT5h63SeulaifC3tv1/Uyx8qVNWuj9EeyPrGmMv+tjbKkC9kj0Yk3v9uDdBl/tNXA3XOkD3leOP96Xhr8mePZ9...
+
+   String 24:
+     Length: 10924 characters
+     Decoded Size: 8192 bytes
+     Confidence: 0.950
+     Entropy: 5.96
+     Category: 💾 LARGE BLOB
+     Preview: LwHPxPR5pgn70jXyTEx311zhHqrWY5uxplMfU9akxePa8rvx7vzjQZd96VThuXRj6L1Rx+V6TN6JjpCd7rIeW8nm8Npr0AuW6z0u...
+
+   String 25:
+     Length: 10924 characters
+     Decoded Size: 8192 bytes
+     Confidence: 0.950
+     Entropy: 5.96
+     Category: 💾 LARGE BLOB
+     Preview: NXclR8fvRZRXNW0iEvL7ydYmOsRP52VK52La1lkqNu26D7P4U/t3C2bNCP0B6Gyp9jrpDgbyr8uU+xWktXhuRjFLqi/yuUcY3OBz...
+
+   String 26:
+     Length: 10924 characters
+     Decoded Size: 8192 bytes
+     Confidence: 0.950
+     Entropy: 5.98
+     Category: 💾 LARGE BLOB
+     Preview: ZuUUOheFjxGnApveQz/dYwFP52FceDtGnNa8gu+3bX2b3WnQdm13RoFXsjsIR3nJ+2+ZsOaRImGedacg9n1DaMFfMn7rHWyO67vl...

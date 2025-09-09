@@ -1,0 +1,9 @@
+# APK Unmask Ignore List
+# Format: regex_pattern:reason_code:comment
+
+.*NOTICES\.Z$:NOTICES_FILE:Android notices file
+.*lowmcL[0-9]+\.bin\.properties$:CRYPTO_LIB:Bouncy Castle cryptographic library files
+.*expo-root\.pem$:CERT_FILE:Expo root certificate file
+^com/[a-z]/[a-z]/[a-z]-$:OBFUSCATED_SDK:Obfuscated SDK components with single letter paths
+^assets/CRT/.*/.*\.crt$:CERT_FILE:SSL certificate files in CRT directories
+^com/visa/vac/tc/[a-z]-$:VISA_SDK:Visa SDK obfuscated components

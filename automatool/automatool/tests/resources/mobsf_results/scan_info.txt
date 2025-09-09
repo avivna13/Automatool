@@ -1,0 +1,6 @@
+=== MobSF Scan Information ===
+
+Scan Hash: 71e562391bcee1a37d955159cf987dd7
+Scan Time: 2025-08-18 21:07:23
+MobSF Version: Latest Docker Image
+Analysis Type: Static Analysis

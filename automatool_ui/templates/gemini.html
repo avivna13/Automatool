@@ -1,0 +1,264 @@
+{% extends "base.html" %}
+
+{% block title %}Gemini AI Analysis - Automatool{% endblock %}
+
+{% block content %}
+<div class="panel">
+    <h2>🤖 AI-Powered Security Analysis</h2>
+    <p class="description">Leverage Gemini AI to analyze your APK data with contextual awareness of all analysis results.</p>
+    
+    <!-- Output Directory Selection -->
+    <div class="form-group">
+        <label for="output-dir">Analysis Directory:</label>
+        <input type="text" id="output-dir" 
+               placeholder="/path/to/analysis/directory" 
+               value="{{ state.OUTPUT_DIR or '' }}"
+               required>
+        <small class="help-text">Directory containing APK analysis results (reviews, YARA, etc.)</small>
+    </div>
+    
+    <!-- Prompt Selection -->
+    <div class="form-group">
+        <label for="prompt-selection">Prompt Selection:</label>
+        <select id="prompt-selection" class="form-select">
+            <option value="">Select a prompt...</option>
+            <option value="prompt1">Prompt Option 1</option>
+            <option value="prompt2">Prompt Option 2</option>
+            <option value="prompt3">Prompt Option 3</option>
+            <option value="prompt4">Prompt Option 4</option>
+            <option value="prompt5">Prompt Option 5</option>
+            <option value="custom">✏️ Custom Prompt</option>
+        </select>
+        <small class="help-text">Select a predefined prompt or choose custom to write your own</small>
+    </div>
+    
+    <!-- Custom Prompt Section -->
+    <div class="form-group">
+        <label for="custom-prompt">Custom Analysis Prompt:</label>
+        <textarea id="custom-prompt" 
+                  rows="4" 
+                  placeholder="Enter your custom analysis prompt here. Gemini will have access to all analysis files in the directory (reviews.json, yara_summary.txt, APK structure, etc.)..."></textarea>
+        <small class="help-text">Be specific about what you want to analyze. Gemini can access all files in the analysis directory.</small>
+    </div>
+    
+    <!-- Launch Button -->
+    <div class="action-buttons">
+        <button class="btn btn-primary" id="launch-gemini" disabled>
+            🚀 Launch Gemini Analysis
+        </button>
+        <button class="btn btn-secondary" id="clear-form">
+            🗑️ Clear Form
+        </button>
+    </div>
+    
+    <!-- Status Display -->
+    <div id="status-display" class="status-panel" style="display: none;">
+        <div class="status-content">
+            <div class="status-icon">⏳</div>
+            <div class="status-text">Preparing analysis...</div>
+        </div>
+    </div>
+    
+    <!-- Results Display -->
+    <div id="results-display" class="results-panel" style="display: none;">
+        <h3>Analysis Results</h3>
+        <div class="results-content">
+            <div class="results-header">
+                <span class="results-file">📄 <span id="result-filename">Response file</span></span>
+                <button class="btn btn-link" id="download-result">⬇️ Download</button>
+            </div>
+            <div class="results-preview">
+                <pre id="result-content">Analysis results will appear here...</pre>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Error Display -->
+    <div id="error-display" class="error-panel" style="display: none;">
+        <div class="error-content">
+            <div class="error-icon">❌</div>
+            <div class="error-message" id="error-text">Error message will appear here</div>
+            <div class="error-details" id="error-details" style="display: none;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Help Panel -->
+<div class="panel">
+    <h3>💡 Tips for Better Analysis</h3>
+    <ul class="help-list">
+        <li><strong>Context Awareness:</strong> Gemini has access to all files in your analysis directory including reviews, YARA results, APK structure, and more.</li>
+        <li><strong>Specific Prompts:</strong> Be specific about what you want to analyze. Ask for actionable insights and recommendations.</li>
+        <li><strong>Multiple Perspectives:</strong> Try different predefined prompts to get comprehensive analysis from various security angles.</li>
+        <li><strong>Custom Analysis:</strong> Use custom prompts for specialized analysis based on your specific security concerns.</li>
+    </ul>
+</div>
+
+<style>
+/* Gemini-specific styles */
+.description {
+    color: var(--secondary-color);
+    margin-bottom: 1.5rem;
+    font-style: italic;
+}
+
+.form-select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 1rem;
+    background-color: white;
+    cursor: pointer;
+}
+
+.form-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 100px;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.help-text {
+    display: block;
+    color: var(--secondary-color);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.status-panel, .results-panel, .error-panel {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    border-radius: 6px;
+}
+
+.status-panel {
+    background-color: #f0f9ff;
+    border: 1px solid #0ea5e9;
+}
+
+.status-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.status-icon {
+    font-size: 1.25rem;
+}
+
+.results-panel {
+    background-color: #f0fdf4;
+    border: 1px solid var(--success-color);
+}
+
+.results-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.results-file {
+    font-weight: 500;
+}
+
+.results-preview {
+    background-color: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1rem;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.results-preview pre {
+    margin: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.error-panel {
+    background-color: #fef2f2;
+    border: 1px solid var(--error-color);
+}
+
+.error-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.error-icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.error-message {
+    font-weight: 500;
+}
+
+.error-details {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background-color: #fee;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.875rem;
+}
+
+.help-list {
+    list-style: none;
+    padding: 0;
+}
+
+.help-list li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.help-list li:last-child {
+    border-bottom: none;
+}
+
+.btn-link {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0.25rem 0.5rem;
+}
+
+.btn-link:hover {
+    color: #1d4ed8;
+}
+
+#launch-gemini:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+</style>
+{% endblock %}

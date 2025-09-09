@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Configuration Mode Selection -->
+<div class="panel">
+    <h2>Configuration Mode</h2>
+    <div class="mode-selection">
+        <label>
+            <input type="radio" name="mode" value="lazy" checked> 
+            📁 Lazy Mode (Upload Files)
+        </label>
+        <label>
+            <input type="radio" name="mode" value="manual"> 
+            📂 Manual Mode (Specify Paths)
+        </label>
+    </div>
+</div>
+
+<!-- Lazy Mode Panel -->
+<div class="panel" id="lazy-panel">
+    <h2>📁 Lazy Mode - File Upload</h2>
+    <form id="lazy-form" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="apk-file">APK File (Required):</label>
+            <input type="file" id="apk-file" name="apk_file" accept=".apk" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="yara-file">YARA JSON (Optional):</label>
+            <input type="file" id="yara-file" name="yara_file" accept=".json">
+        </div>
+        
+        <div class="form-group">
+            <label>Output Directory:</label>
+            <span class="readonly">/static/uploads/[auto-generated]</span>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">🚀 Launch Setup</button>
+    </form>
+</div>
+
+<!-- Manual Mode Panel -->
+<div class="panel" id="manual-panel" style="display: none;">
+    <h2>📂 Manual Mode - Specify Paths</h2>
+    <form id="manual-form">
+        <div class="form-group">
+            <label for="directory-path">Directory Path:</label>
+            <input type="text" id="directory-path" name="directory_path" placeholder="/path/to/analysis/directory" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="apk-filename">APK Filename:</label>
+            <input type="text" id="apk-filename" name="apk_filename" placeholder="myapp.apk" required>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">🚀 Launch Setup</button>
+    </form>
+</div>
+
+<!-- Global Configuration Display -->
+<div class="panel">
+    <h2>Global Configuration</h2>
+    <div class="config-display">
+        <div class="config-item">
+            <strong>📱 APK_FILENAME:</strong> 
+            <span id="apk-filename-display">{{ state.APK_FILENAME or 'Not set' }}</span>
+        </div>
+        <div class="config-item">
+            <strong>📂 OUTPUT_DIR:</strong> 
+            <span id="output-dir-display">{{ state.OUTPUT_DIR or 'Not set' }}</span>
+        </div>
+        <div class="config-item">
+            <strong>📍 APK_PATH:</strong> 
+            <span id="apk-path-display">{{ state.APK_PATH or 'Not set' }}</span>
+        </div>
+    </div>
+</div>
+
+<!-- Analysis Actions -->
+<div class="panel">
+    <h2>Analysis Actions</h2>
+    <div class="action-buttons">
+        <button class="btn btn-primary action-btn" data-action="full-process" 
+                {% if not state.setup_complete %}disabled{% endif %}>
+            🔄 Full Process
+        </button>
+        <button class="btn btn-primary action-btn" data-action="get-reviews"
+                {% if not state.setup_complete %}disabled{% endif %}>
+            📱 Get Reviews
+        </button>
+        <button class="btn btn-success" onclick="window.location.href='/gemini'"
+                {% if not state.OUTPUT_DIR %}disabled title="Please configure output directory first"{% endif %}>
+            🤖 AI Analysis
+        </button>
+        <button class="btn btn-secondary action-btn" data-action="clean">
+            🧹 Clean
+        </button>
+        <button class="btn btn-primary action-btn" data-action="mobsf"
+                {% if not state.setup_complete %}disabled{% endif %}>
+            🔍 Upload to MobSF
+        </button>
+        <button class="btn btn-primary action-btn" data-action="native-strings-analysis"
+                {% if not state.setup_complete %}disabled{% endif %}>
+            🔍 Run Native Strings Analysis
+        </button>
+        <a href="/monitoring" class="btn btn-success">
+            🔍 Toll Fraud Monitoring
+        </a>
+        </button>
+        <button class="btn btn-primary action-btn" data-action="apkleaks"
+                {% if not state.setup_complete %}disabled{% endif %}>
+            💧 Run APKLeaks
+        </button>
+        <button class="btn btn-primary action-btn" data-action="scan-base64"
+                {% if not state.setup_complete %}disabled{% endif %}>
+            🔍 Scan for Base64 Strings
+        </button>
+        <button class="btn btn-primary action-btn" data-action="font-analysis"
+                {% if not state.setup_complete %}disabled{% endif %}>
+            🔤 TTF Font Analysis
+        </button>
+        <button class="btn btn-primary action-btn" data-action="frida-fsmon-scan"
+                {% if not state.setup_complete %}disabled{% endif %}>
+            ⚡ Run Frida & F-Monitor Scan (1 min)
+        </button>
+        <button class="btn btn-primary action-btn" data-action="manifest-analysis"
+                {% if not state.setup_complete %}disabled{% endif %}>
+            📋 Manifest Analysis (AMAnDe)
+        </button>
+        <button class="btn btn-primary action-btn" data-action="decompile-apk"
+                {% if not state.setup_complete %}disabled{% endif %}>
+            🔧 Decompile APK (apktool + Jadx)
+        </button>
+        <button class="btn btn-warning action-btn" data-action="apk-unmask-analysis"
+                {% if not state.setup_complete %}disabled{% endif %}>
+            🎭 APK Unmask Analysis
+        </button>
+        <button class="btn btn-info action-btn" data-action="blutter-analysis"
+                {% if not state.setup_complete %}disabled{% endif %}
+                title="Analyze Flutter libapp.so files - Results will be tracked for cleanup">
+            🦋 Blutter Flutter Analysis
+        </button>
+    </div>
+    
+    <!-- Process Control Buttons -->
+    <div class="process-control-buttons" style="margin-top: 1rem;">
+        <button class="btn btn-warning" id="stop-process-btn" style="display: none;">
+            ⏹️ Stop Process
+        </button>
+        <button class="btn btn-secondary" id="clear-logs-btn">
+            🗑️ Clear Logs
+        </button>
+    </div>
+</div>
+
+<!-- VPN-Frida Automation Panel -->
+<div class="panel" id="vpn-frida-panel">
+    <h2>🌐 VPN-Frida Automation</h2>
+    
+    <!-- Package Detection Section -->
+    <div class="form-group">
+        <label for="package-name">📱 Detected Package Name:</label>
+        <input type="text" id="package-name" readonly 
+               placeholder="Upload an APK file first..." 
+               class="form-control readonly-input">
+        <small class="form-text">Package name will be auto-detected from uploaded APK</small>
+    </div>
+    
+    <!-- Country Selection -->
+    <div class="form-group">
+        <label for="vpn-country">🌍 Choose VPN Country:</label>
+        <select id="vpn-country" class="form-control">
+            <option value="">Select a country...</option>
+            <option value="us">🇺🇸 United States</option>
+            <option value="germany">🇩🇪 Germany</option>
+            <option value="japan">🇯🇵 Japan</option>
+            <option value="uk">🇬🇧 United Kingdom</option>
+            <option value="canada">🇨🇦 Canada</option>
+            <option value="australia">🇦🇺 Australia</option>
+            <option value="brazil">🇧🇷 Brazil</option>
+            <option value="chile">🇨🇱 Chile</option>
+            <option value="kazakhstan">🇰🇿 Kazakhstan</option>
+            <option value="thailand">🇹🇭 Thailand</option>
+            <option value="france">🇫🇷 France</option>
+            <option value="argentina">🇦🇷 Argentina</option>
+            <option value="colombia">🇨🇴 Colombia</option>
+            <option value="costarica">🇨🇷 Costa Rica</option>
+            <option value="kenya">🇰🇪 Kenya</option>
+        </select>
+    </div>
+    
+    <!-- Control Buttons -->
+    <div class="button-group">
+        <button id="start-vpn-frida" class="btn btn-primary" disabled>
+            🚀 Start VPN-Frida
+        </button>
+        <button id="stop-vpn-frida" class="btn btn-secondary" disabled>
+            ⏹️ Stop
+        </button>
+        <button id="change-country" class="btn btn-info" disabled>
+            🔄 Change Country
+        </button>
+    </div>
+    
+    <!-- Status Display -->
+    <div class="status-panel" id="vpn-frida-status">
+        <div class="status-item">
+            <strong>Status:</strong> 
+            <span id="status-text" class="status-value">Waiting for APK upload...</span>
+        </div>
+        <div class="status-item">
+            <strong>Country:</strong> 
+            <span id="current-country" class="status-value">None</span>
+        </div>
+        <div class="status-item">
+            <strong>App:</strong> 
+            <span id="current-app" class="status-value">None</span>
+        </div>
+        <div class="status-item">
+            <strong>Runtime:</strong> 
+            <span id="runtime" class="status-value">0s</span>
+        </div>
+    </div>
+</div>
+
+<!-- Process Status -->
+<div class="panel">
+    <h2>Process Status</h2>
+    <div class="status-display">
+        <div class="status-item">
+            <strong>🔄 Status:</strong> 
+            <span id="status-display">Ready</span>
+        </div>
+        <div class="status-item">
+            <strong>📊 Progress:</strong>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+            </div>
+        </div>
+        <div class="status-item">
+            <strong>📝 Log:</strong>
+            <div class="log-display" id="log-display">
+                Waiting for user action...
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Message Display Area -->
+<div id="message-area"></div>
+{% endblock %}

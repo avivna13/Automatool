@@ -1,0 +1,9 @@
+{
+  "timestamp": "2025-08-23T16:05:34.216876",
+  "package_name": "com.test.app",
+  "vpn_country": "testcountry",
+  "vpn_provider": "nordvpn",
+  "scripts": null,
+  "success": false,
+  "output_directory": "vpn_frida_com.test.app_20250823_160534"
+}

@@ -1,0 +1,313 @@
+YARA Analysis Summary
+==================================================
+
+=== ALL_DATA ===
+
+Match 1:
+- Description: NQ Shield
+- Strings: nqshield
+
+Match 2:
+- Description: Baidu
+- Strings: baiduprotect1.jar
+
+Match 3:
+- Description: The application have full_screen_intent permission
+- Strings: android.permission.USE_FULL_SCREEN_INTENT
+
+Match 4:
+- Description: request install packages in the manifest
+- Strings: <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+
+----------------------------------------
+=== androidmanifest.xml ===
+
+Match 1:
+- Description: The application asks for accessibility permissions and preforms malicious activity
+- Strings: <service android:name="uts.sdk.modules.wujieSdk.CustomAccessibilityService" android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" android:enabled="true" android:exported="true">
+      <intent-filter>
+
+Match 2:
+- Description: This rule detects Google's signature verification defense. The report links to the Frida bypass script.
+- Strings: com.pairip.licensecheck.LicenseActivity, com.pairip.licensecheck.LicenseContentProvider, com.pairip.licensecheck.LicenseContentProvider, 
+
+Match 3:
+- Description: request install packages in the manifest
+- Strings: <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+
+Match 4:
+- Description: A heuristic rule to search for applications with suspicious permissions (listed by Aviran)
+- Strings: , <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+
+Match 5:
+- Description: This rule targets a technique that the application cmz.green.files uses to hide it's activities from the Recent Activities screen.
+- Strings: <activity android:theme="@7F100220" android:name="io.dcloud.feature.sdk.multi.DCUniMPNoRecentsEntry0" android:permission="com.miui.securitycenter.permission.AppPermissionsEditor" android:exported="false" android:process=":unimp0" android:taskAffinity=":unimp0" android:excludeFromRecents="true" android:launchMode="2" android:screenOrientation="2" android:configChanges="0x40000FF3" android:windowSoftInputMode="0x00000010" android:hardwareAccelerated="true"/>, 
+
+----------------------------------------
+=== classes.dex ===
+
+Match 1:
+- Description: The application have full_screen_intent permission
+- Strings: android.permission.USE_FULL_SCREEN_INTENT
+
+Match 2:
+- Description: Detect Uniapp (dcloud) applications
+- Strings: dcloud_uniplugins.json
+
+----------------------------------------
+=== classes2.dex ===
+
+Match 1:
+- Description: This rule detects Google's signature verification defense. The report links to the Frida bypass script.
+- Strings: Lcom/pairip/licensecheck/ILicenseV2ResultListener;, Lcom/pairip/licensecheck/ILicenseV2ResultListener;
+
+----------------------------------------
+=== classes3.dex ===
+
+Match 1:
+- Description: SecNeo.A
+- Strings: (none)
+
+Match 2:
+- Description: APKProtect
+- Strings: libAPKProtect.so
+
+Match 3:
+- Description: Bangcle
+- Strings: libsecexe.so, libsecmain.so
+
+Match 4:
+- Description: Qihoo 360
+- Strings: libprotectClass.so
+
+Match 5:
+- Description: Jiagu
+- Strings: libjiagu.so
+
+Match 6:
+- Description: App Fortify
+- Strings: libNSaferOnly.so
+
+Match 7:
+- Description: NQ Shield
+- Strings: libnqshield.so, nqshield
+
+Match 8:
+- Description: Ijiami
+- Strings: ijiami.ajm
+
+Match 9:
+- Description: Naga
+- Strings: libddog.so
+
+Match 10:
+- Description: Alibaba
+- Strings: libmobisec.so
+
+Match 11:
+- Description: Baidu
+- Strings: baiduprotect1.jar, libbaiduprotect.so
+
+Match 12:
+- Description: The signature search for 'RSA' constants
+- Strings: RSA/ECB/OAEPWithSHA-256AndMGF1Padding
+
+Match 13:
+- Description: Detect Uniapp (dcloud) applications
+- Strings: dcloud_uniplugins.json, io.dcloud.common
+
+----------------------------------------
+=== io/dcloud/all.js ===
+
+Match 1:
+- Description: Detect Uniapp (dcloud) applications
+- Strings: io.dcloud.common
+
+----------------------------------------
+=== io/dcloud/weexunijs.js ===
+
+Match 1:
+- Description: Detect Uniapp (dcloud) applications
+- Strings: io.dcloud.common
+
+----------------------------------------
+=== lib/arm64-v8a/libuniappx.so ===
+
+Match 1:
+- Description: Alipay
+- Strings: Alipay clang version 
+
+----------------------------------------
+=== lib/arm64-v8a/libweexcore.so ===
+
+Match 1:
+- Description: Alipay
+- Strings: Alipay clang version 
+
+----------------------------------------
+=== lib/arm64-v8a/libweexjsb.so ===
+
+Match 1:
+- Description: Alipay
+- Strings: Alipay clang version 
+
+----------------------------------------
+=== lib/arm64-v8a/libweexjss.so ===
+
+Match 1:
+- Description: Alipay
+- Strings: Alipay clang version 
+
+----------------------------------------
+=== lib/arm64-v8a/libweexjst.so ===
+
+Match 1:
+- Description: Alipay
+- Strings: Alipay clang version 
+
+----------------------------------------
+=== lib/armeabi-v7a/libuniappx.so ===
+
+Match 1:
+- Description: Alipay
+- Strings: Alipay clang version 
+
+----------------------------------------
+=== lib/armeabi-v7a/libweexcore.so ===
+
+Match 1:
+- Description: Alipay
+- Strings: Alipay clang version 
+
+----------------------------------------
+=== lib/armeabi-v7a/libweexjsb.so ===
+
+Match 1:
+- Description: Alipay
+- Strings: Alipay clang version 
+
+----------------------------------------
+=== lib/armeabi-v7a/libweexjss.so ===
+
+Match 1:
+- Description: Alipay
+- Strings: Alipay clang version 
+
+----------------------------------------
+=== lib/armeabi-v7a/libweexjst.so ===
+
+Match 1:
+- Description: Alipay
+- Strings: Alipay clang version 
+
+----------------------------------------
+=== lib/x86/libuniappx.so ===
+
+Match 1:
+- Description: Alipay
+- Strings: Alipay clang version 
+
+----------------------------------------
+=== lib/x86/libweexcore.so ===
+
+Match 1:
+- Description: Alipay
+- Strings: Alipay clang version 
+
+----------------------------------------
+=== lib/x86/libweexjsb.so ===
+
+Match 1:
+- Description: Alipay
+- Strings: Alipay clang version 
+
+----------------------------------------
+=== lib/x86/libweexjss.so ===
+
+Match 1:
+- Description: Alipay
+- Strings: Alipay clang version 
+
+----------------------------------------
+=== lib/x86/libweexjst.so ===
+
+Match 1:
+- Description: Alipay
+- Strings: Alipay clang version 
+
+----------------------------------------
+=== lib/x86_64/libuniappx.so ===
+
+Match 1:
+- Description: Alipay
+- Strings: Alipay clang version 
+
+----------------------------------------
+=== lib/x86_64/libweexcore.so ===
+
+Match 1:
+- Description: Alipay
+- Strings: Alipay clang version 
+
+----------------------------------------
+=== lib/x86_64/libweexjsb.so ===
+
+Match 1:
+- Description: Alipay
+- Strings: Alipay clang version 
+
+----------------------------------------
+=== lib/x86_64/libweexjss.so ===
+
+Match 1:
+- Description: Alipay
+- Strings: Alipay clang version 
+
+----------------------------------------
+=== lib/x86_64/libweexjst.so ===
+
+Match 1:
+- Description: Alipay
+- Strings: Alipay clang version 
+
+----------------------------------------
+=== res/layout/dcloud_shortcut_permission_guide_layout.xml ===
+
+Match 1:
+- Description: Detect Uniapp (dcloud) applications
+- Strings: io.dcloud.common
+
+----------------------------------------
+
+
+Summary:
+
+=======  uni.app.UNIA804A35.apk  =======
+
+--packer--
+  | apkprotect
+  | ijiami
+  | bangcle
+  | alibaba
+  | nqshield
+  | secneo_a
+  | baidu
+  | app_fortify
+  | naga
+  | qihoo360
+  | jiagu
+
+--heuristic--
+  | full_screen_intent_permission
+  | heur_accessibility
+  | heur_pairip_signature_defense
+  | heur_encryption_rsa
+  | heur_requestInstallPackages_permission
+  | heur_suspiciousPermissions
+  | heur_framework_uniapp
+
+--technique--
+  | tech_leadGen_excludeFromRecent
+
+--obfuscator_protector--
+  | alipay

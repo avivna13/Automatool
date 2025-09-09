@@ -1,0 +1,45 @@
+{
+    "featured_reviews": [],
+    "related_apps": [],
+    "active": true,
+    "categories": [
+        {
+            "name": "Sports",
+            "id": "sports"
+        }
+    ],
+    "description": {
+        "full_description": "PicnicBet.com is a Victorian based Australian owned and operated online and oncourse racing and sports bookmaker that has been operating since 1981. Unlike overseas based Corporate bookmakers who take profits out of the Country and away from Australian based racing and sports we take pride in being a 100% Australian business that invests back into the industry.<br>Download our app for Android for a quick, easy and secure way to bet on racing and sports.<br><br>Features:<br>- Next to Jump: Are you in a hurry? Quickly jump on the next to go.<br>- Form Guides: Hunt down your next winner with either the short or long form.<br>- Same Game Multi: Increase your odds with each selection on your favourite sports including AFL, NRL, NBA, NBL and more.<br>- Huge Amount of Markets: Over 5000 Racing and Sporting event each week.<br>- PicnicBet TV: Live Streaming of selected international racing.<br>- Account Management: Get your money in and out quickly and securely.<br>&nbsp;<br>You must be 18+ to have a Picnic Bet account. T&amp;C’s Apply and are available at&nbsp;www.picnicbet.com<br><br>Is gambling a problem for you? Call Gambling Help on 1800 858 858 or visit&nbsp;gamblinghelponline.org.au.",
+        "app_summary": "PicnicBet belongs to the 'Sports' category maintaining a content rating of 'Rated for 18+'. Last month's estimates were < 5k downloads. The app is available in Australia but not being advertised actively. Sign up / Sign in to learn more about the time spent, session durations, usage & engagement (DAU, WAU, MAU), retention, churn, marketshare, growth trends, and other market statistics.",
+        "short_description": "picnicbet.com"
+    },
+    "has_in_app_purchases": false,
+    "installs": "1K - 5K",
+    "language": "EN",
+    "support_url": "https://www.picnicbet.com/",
+    "top_countries": [
+        "AU"
+    ],
+    "website_url": "https://www.picnicbet.com/",
+    "app_id": "com.betmakers.picnicbet",
+    "app_view_url": "/android/us/picnicbet-com/app/picnicbet/com.betmakers.picnicbet/",
+    "country": "US",
+    "icon_url": "https://play-lh.googleusercontent.com/iXxaKtlFk8kQnd_xhBEfNl26zVpLbTUbKDeEv-FQCRJgtVy522gLlROW3F4LNzDDDQ=s150",
+    "name": "PicnicBet",
+    "publisher_id": "PicnicBet.com",
+    "publisher_name": "PicnicBet.com",
+    "publisher_profile_url": "/publisher/android/PicnicBet.com",
+    "rating": 0.0,
+    "country_release_date": null,
+    "current_version": "",
+    "file_size": "33M",
+    "first_released_in": [
+        "AU"
+    ],
+    "minimum_os_version": "5.0 and up",
+    "publisher_country": null,
+    "recent_release_date": null,
+    "release_date": 1622937600000,
+    "worldwide_release_date": null,
+    "generated_google_play_url": "https://play.google.com/store/apps/details?id=com.betmakers.picnicbet&gl=US"
+}

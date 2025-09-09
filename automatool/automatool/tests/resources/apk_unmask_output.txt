@@ -1,0 +1,122 @@
+
+
+[!] Detected potentially malicious files:
+	-> org/bouncycastle/pqc/crypto/picnic/lowmcL1.bin.properties
+	   └─ File is out of place
+	   └─ File has a fake extension
+	-> org/bouncycastle/pqc/crypto/picnic/lowmcL3.bin.properties
+	   └─ File is out of place
+	   └─ File has a fake extension
+	-> org/bouncycastle/pqc/crypto/picnic/lowmcL5.bin.properties
+	   └─ File is out of place
+	   └─ File has a fake extension
+	-> assets/tcgetconfig.xml
+	   └─ File is out of place
+	   └─ File has a fake extension
+	   └─ File appears to be encrypted
+	-> com/e/d/a-
+	   └─ File is out of place
+	   └─ File has a fake extension
+	   └─ File appears to be encrypted
+	-> com/e/d/b-
+	   └─ File is out of place
+	   └─ File has a fake extension
+	   └─ File appears to be encrypted
+	-> assets/CRT/DEV/am.tapit.mx.crt
+	   └─ File is out of place
+	   └─ File has a fake extension
+	   └─ File appears to be encrypted
+	-> assets/CRT/DEV/api.tapit.mx.crt
+	   └─ File is out of place
+	   └─ File has a fake extension
+	   └─ File appears to be encrypted
+	-> com/visa/vac/tc/c-
+	   └─ File is out of place
+	   └─ File has a fake extension
+	   └─ File appears to be encrypted
+	-> com/visa/vac/tc/d-
+	   └─ File is out of place
+	   └─ File has a fake extension
+	   └─ File appears to be encrypted
+	-> assets/CRT/PROD/am.tapit.mx.crt
+	   └─ File is out of place
+	   └─ File has a fake extension
+	   └─ File appears to be encrypted
+	-> assets/CRT/PROD/api.tapit.mx.crt
+	   └─ File is out of place
+	   └─ File has a fake extension
+	   └─ File appears to be encrypted
+	-> assets/CRT/QA/am.tapit.mx.crt
+	   └─ File is out of place
+	   └─ File has a fake extension
+	   └─ File appears to be encrypted
+	-> assets/CRT/QA/api.tapit.mx.crt
+	   └─ File is out of place
+	   └─ File has a fake extension
+	   └─ File appears to be encrypted
+	-> assets/signature/DEV.txt
+	   └─ File is out of place
+	   └─ File has a fake extension
+	   └─ File appears to be encrypted
+	-> assets/signature/PROD.txt
+	   └─ File is out of place
+	   └─ File has a fake extension
+	   └─ File appears to be encrypted
+	-> assets/signature/QA.txt
+	   └─ File is out of place
+	   └─ File has a fake extension
+	   └─ File appears to be encrypted
+	-> assets/ttp/mastercard/ReferenceTags.json
+	   └─ File is out of place
+	   └─ File has a fake extension
+	   └─ File appears to be encrypted
+	-> assets/ttp/mastercard/manifest.json
+	   └─ File is out of place
+	   └─ File has a fake extension
+	   └─ File appears to be encrypted
+	-> assets/ttp/mastercard/tlvTerminal.json
+	   └─ File is out of place
+	   └─ File has a fake extension
+	   └─ File appears to be encrypted
+	-> assets/ttp/mastercard/v3DataDictionary.json
+	   └─ File is out of place
+	   └─ File has a fake extension
+	   └─ File appears to be encrypted
+	-> assets/com/d/d/a/109ba7a353c57b6fa-
+	   └─ File is out of place
+	   └─ File has a fake extension
+	   └─ File appears to be encrypted
+	-> assets/com/d/d/a/37898e3a8d4d5fe7b-
+	   └─ File is out of place
+	   └─ File has a fake extension
+	   └─ File appears to be encrypted
+	-> com/mastercard/terminalsdk/internal/a-
+	   └─ File is out of place
+	   └─ File has a fake extension
+	   └─ File appears to be encrypted
+	-> com/mastercard/terminalsdk/internal/b-
+	   └─ File is out of place
+	   └─ File has a fake extension
+	   └─ File appears to be encrypted
+	-> com/mastercard/terminalsdk/internal/c-
+	   └─ File is out of place
+	   └─ File has a fake extension
+	   └─ File appears to be encrypted
+	-> com/mastercard/terminalsdk/internal/d-
+	   └─ File is out of place
+	   └─ File has a fake extension
+	   └─ File appears to be encrypted
+	-> res/font/noto_sans_japanese.ttf
+	   └─ File is out of place
+	   └─ File has a fake extension
+	-> res/font/noto_sans_korean.ttf
+	   └─ File is out of place
+	   └─ File has a fake extension
+	-> res/font/noto_sans_simplified_chinese.ttf
+	   └─ File is out of place
+	   └─ File has a fake extension
+	-> res/font/noto_sans_traditional_chinese.ttf
+	   └─ File is out of place
+	   └─ File has a fake extension
+[*] Total: 31
+

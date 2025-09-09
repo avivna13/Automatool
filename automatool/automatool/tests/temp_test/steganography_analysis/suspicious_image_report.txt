@@ -1,0 +1,16 @@
+SUSPICIOUS IMAGE DETECTED
+==============================
+
+Image File: test_suspicious_image.png
+Format: PNG
+Total File Size: 196 bytes
+Legitimate Image Ends: 66 bytes
+Trailing Data Size: 130 bytes
+Threshold: 10 bytes
+
+*** SUSPICIOUS CLASSIFICATION ***
+This image has 130 bytes of data after the legitimate image content,
+which exceeds the suspicious threshold of 10 bytes.
+
+WARNING: Manual investigation required
+The trailing data could indicate steganography or malware.

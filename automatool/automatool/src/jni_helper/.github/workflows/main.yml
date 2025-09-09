@@ -1,0 +1,29 @@
+name: CI
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'oracle'
+          java-version: '17'
+      - name: Build APK
+        run: cd demo_apk && bash ./gradlew assembleDebug --stacktrace
+      - name: Install Dependencies
+        run: pip3 install -r requirements.txt
+      - name: Test
+        run: ./extract_jni.py demo_apk/app/build/outputs/apk/debug/app-debug.apk
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: demo_apk/app/build/outputs/apk/debug/app-debug.apk
+          generate_release_notes: true
