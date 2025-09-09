@@ -237,6 +237,7 @@
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
             </intent-filter>
         </receiver>
+        
         <provider android:authorities="com.magicvideo.photoeslideshow.initprovider" android:exported="false" android:initOrder="100" android:name="com.tramini.plugin.api.TraminiContentProvider"/>
         <provider android:authorities="com.magicvideo.photoeslideshow.adjust-lifecycle-provider" android:exported="false" android:name="com.adjust.sdk.SystemLifecycleContentProvider"/>
         <meta-data android:name="com.android.vending.splits" android:resource="@xml/splits0"/>
