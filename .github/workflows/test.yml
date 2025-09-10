@@ -2,9 +2,9 @@ name: Test Suite
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, dev ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main, dev ]
 
 jobs:
   test-automatool:
@@ -53,8 +53,7 @@ jobs:
           --ignore=tests/test_automatool_integration.py \
           --ignore=tests/test_cleanup_integration.py \
           --ignore=tests/test_vscode_process_termination.py \
-          || echo "Some tests failed, continuing..."
-
+  
   test-automatool-ui:
     name: Test Automatool Web UI
     runs-on: ubuntu-latest
@@ -89,7 +88,7 @@ jobs:
       working-directory: ./automatool_ui
       run: |
         # Run tests, allow some to fail during initial setup
-        python -m pytest tests/ -v --tb=short || echo "Some tests failed, continuing..."
+        python -m pytest tests/ -v --tb=short
 
   basic-integration:
     name: Basic Integration Test
