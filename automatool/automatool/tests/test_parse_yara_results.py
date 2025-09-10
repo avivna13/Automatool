@@ -35,9 +35,9 @@ class TestParseYaraResults:
         # Run the parsing function
         result = parse_yara_to_summary(temp_dir, verbose=True)
         
-        # Check that it returns the output file path (success)
+        # Check that it returns the summary content (success)
         assert isinstance(result, str)
-        assert result.endswith('yara_summary.txt')
+        assert "YARA Analysis Summary" in result
         
         # Check that the output file was created
         output_file = os.path.join(temp_dir, 'yara_summary.txt')
@@ -125,9 +125,9 @@ Test summary content
         
         result = parse_yara_to_summary(temp_dir, verbose=True)
         
-        # Should still return the output file path (successful parsing)
+        # Should still return the summary content (successful parsing)
         assert isinstance(result, str)
-        assert result.endswith('yara_summary.txt')
+        assert "YARA Analysis Summary" in result
         
         # Check that output file was created
         output_file = os.path.join(temp_dir, 'yara_summary.txt')
@@ -155,7 +155,7 @@ Test summary content
         captured = capsys.readouterr()
         
         assert isinstance(result, str)
-        assert result.endswith('yara_summary.txt')
+        assert "YARA Analysis Summary" in result
         assert "[DEBUG]" in captured.out
         assert "Looking for YARA results:" in captured.out
         assert "Successfully parsed YARA data" in captured.out
@@ -174,7 +174,7 @@ Test summary content
         captured = capsys.readouterr()
         
         assert isinstance(result, str)
-        assert result.endswith('yara_summary.txt')
+        assert "YARA Analysis Summary" in result
         assert "[DEBUG]" not in captured.out
         assert "✅ YARA summary created:" in captured.out
     
@@ -209,7 +209,7 @@ Test summary
         result = parse_yara_to_summary(temp_dir, verbose=True)
         
         assert isinstance(result, str)
-        assert result.endswith('yara_summary.txt')
+        assert "YARA Analysis Summary" in result
         
         # Check output file content
         output_file = os.path.join(temp_dir, 'yara_summary.txt')

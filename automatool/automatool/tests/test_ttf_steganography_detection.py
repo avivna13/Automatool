@@ -157,8 +157,7 @@ class TestTTFSteganographyDetection(unittest.TestCase):
         # Test with verbose=True
         with io.StringIO() as buf, redirect_stdout(buf):
             result = detect_ttf_steganography(str(self.test_font_path), self.test_output_dir, verbose=True)
-        
-        verbose_output = buf.getvalue()
+            verbose_output = buf.getvalue()
         
         # Check for debug information
         self.assertIn("[DEBUG]", verbose_output)
