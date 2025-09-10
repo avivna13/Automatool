@@ -60,4 +60,4 @@ After making this change, the web application will be able to run `sudo docker` 
 
 By default, the MobSF container is configured to run on port `8080`. If you need to change this, you can edit the `utils/process_manager.py` file.
 
-In the `execute_mobsf_upload` function, you will find the `--port` argument. You can change the value of this argument to the desired port.
+In the `execute_mobsf_upload` function, you will find the `--port` argument set to `8080`. You can change the value of this argument to the desired port.
