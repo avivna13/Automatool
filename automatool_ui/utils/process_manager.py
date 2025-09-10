@@ -53,7 +53,8 @@ class ProcessManager:
         cmd = [
             'python', worker_script,
             '--apk-path', apk_path,
-            '--output-dir', output_dir
+            '--output-dir', output_dir,
+            '--port', '8080'
         ]
         if verbose:
             cmd.append('--verbose')
