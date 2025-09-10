@@ -100,6 +100,21 @@ class ProcessManager:
         
         return self._run_process(cmd, "TTF Font Analysis", self.automatool_path, timeout=self.default_timeout)
 
+    def execute_image_steganography_analysis(self, input_path, output_dir, threshold_bytes=10, verbose=True):
+        """Execute image steganography detection analysis."""
+        script_path = os.path.join("scripts", "automations", "detect_image_steganography.py")
+        cmd = [
+            'python', script_path,
+            input_path,
+            output_dir,
+            '--threshold', str(threshold_bytes)
+        ]
+        
+        if verbose:
+            cmd.append('--verbose')
+        
+        return self._run_process(cmd, "Image Steganography Analysis", self.automatool_path, timeout=self.default_timeout)
+
     def execute_frida_fsmon_scan(self, output_dir, package_name):
         """Execute a combined Frida and F-Monitor scan."""
         # Define the individual commands

@@ -11,6 +11,8 @@ Threshold: 10 bytes (configurable) - based on security research for minimal fals
 
 import os
 import struct
+import sys
+import argparse
 
 
 def detect_image_steganography(image_path, output_directory, verbose=False, threshold_bytes=10):
@@ -305,3 +307,91 @@ def _generate_simple_report(analysis_result, results_dir, verbose=False):
         print(f"[DEBUG] Generated suspicious image report: {report_file}")
     
     return report_file
+
+
+def parse_arguments():
+    """Parse command line arguments for standalone usage."""
+    parser = argparse.ArgumentParser(
+        description="Image Steganography Detection - Analyze images for suspicious trailing data",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  %(prog)s /path/to/image.png /path/to/output
+  %(prog)s /path/to/image.jpg /path/to/output --threshold 20 --verbose
+        """
+    )
+    
+    parser.add_argument(
+        "image_path",
+        help="Path to image file to analyze"
+    )
+    
+    parser.add_argument(
+        "output_directory", 
+        help="Directory to save analysis results"
+    )
+    
+    parser.add_argument(
+        "--threshold",
+        type=int,
+        default=10,
+        help="Minimum trailing bytes to classify as suspicious (default: 10)"
+    )
+    
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Enable verbose debug output"
+    )
+    
+    return parser.parse_args()
+
+
+def main():
+    """Main entry point for standalone execution."""
+    args = parse_arguments()
+    
+    print("🖼️  Starting Image Steganography Detection")
+    print(f"📁 Input: {args.image_path}")
+    print(f"📁 Output: {args.output_directory}")
+    print(f"🎯 Threshold: {args.threshold} bytes")
+    
+    # Validate inputs
+    if not os.path.exists(args.image_path):
+        print(f"❌ ERROR: Image file not found: {args.image_path}")
+        sys.exit(1)
+    
+    if not os.path.exists(args.output_directory):
+        print(f"❌ ERROR: Output directory not found: {args.output_directory}")
+        sys.exit(1)
+    
+    try:
+        # Call the main detection function
+        result = detect_image_steganography(
+            args.image_path,
+            args.output_directory,
+            verbose=args.verbose,
+            threshold_bytes=args.threshold
+        )
+        
+        if result:
+            if result.get('is_suspicious'):
+                print(f"🚨 SUSPICIOUS: Image has {result['trailing_bytes']} trailing bytes")
+            else:
+                print(f"✅ CLEAN: Image has {result['trailing_bytes']} trailing bytes (below threshold)")
+            print(f"📄 Analysis complete!")
+            sys.exit(0)
+        else:
+            print("❌ Image analysis failed")
+            sys.exit(1)
+            
+    except Exception as e:
+        print(f"❌ ERROR: Analysis failed: {e}")
+        if args.verbose:
+            import traceback
+            traceback.print_exc()
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
