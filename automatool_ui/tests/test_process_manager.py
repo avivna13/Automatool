@@ -295,3 +295,55 @@ class TestProcessManager:
         mock_process.terminate.assert_called_once()
         assert manager.process_status == "cancelled"
         assert manager.current_process is None
+
+    def test_execute_image_steganography_analysis(self):
+        """Test image steganography analysis execution method."""
+        manager = ProcessManager()
+        
+        with patch.object(manager, '_run_process') as mock_run:
+            mock_run.return_value = True
+            
+            result = manager.execute_image_steganography_analysis(
+                "/test/image.png", 
+                "/test/output", 
+                threshold_bytes=15, 
+                verbose=True
+            )
+            
+            assert result is True
+            mock_run.assert_called_once()
+            
+            # Check command construction
+            call_args = mock_run.call_args[0]
+            cmd = call_args[0]
+            
+            assert 'python' in cmd
+            assert 'detect_image_steganography.py' in ' '.join(cmd)
+            assert '/test/image.png' in cmd
+            assert '/test/output' in cmd
+            assert '--threshold' in cmd
+            assert '15' in cmd
+            assert '--verbose' in cmd
+
+    def test_execute_image_steganography_analysis_default_params(self):
+        """Test image steganography analysis with default parameters."""
+        manager = ProcessManager()
+        
+        with patch.object(manager, '_run_process') as mock_run:
+            mock_run.return_value = True
+            
+            result = manager.execute_image_steganography_analysis(
+                "/test/image.jpg", 
+                "/test/output"
+            )
+            
+            assert result is True
+            mock_run.assert_called_once()
+            
+            # Check command construction with defaults
+            call_args = mock_run.call_args[0]
+            cmd = call_args[0]
+            
+            assert '--threshold' in cmd
+            assert '10' in cmd  # Default threshold
+            assert '--verbose' in cmd  # Default verbose=True

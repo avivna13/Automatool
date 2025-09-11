@@ -1,0 +1,11 @@
+{
+  "firebase_api_keys": "AIza[0-9A-Za-z\\-_]{35}",
+  "appsflyer_dev_keys": "af_dev_key[\"'\\s]*=[\"'\\s]*[A-Za-z0-9]{16,}",
+  "google_maps_api_keys": "AIza[0-9A-Za-z\\-_]{35}",
+  "onesignal_app_ids": "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+  "firebase_database_urls": "https://[a-zA-Z0-9\\-]+\\.firebaseio\\.com",
+  "google_services_json": "google-services\\.json",
+  "firebase_config": "firebase[Cc]onfig",
+  "appsflyer_config": "appsflyer|AppsFlyer",
+  "onesignal_config": "onesignal|OneSignal"
+}

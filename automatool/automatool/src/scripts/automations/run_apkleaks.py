@@ -3,7 +3,7 @@ import subprocess
 import argparse
 from resource_tracker import GlobalResourceTracker
 
-def run_apkleaks(apk_path, output_directory, verbose=False):
+def run_apkleaks(apk_path, output_directory, verbose=False, custom_rules_path=None):
     """
     Runs apkleaks on the given APK and saves the output to a JSON file.
 
@@ -11,6 +11,7 @@ def run_apkleaks(apk_path, output_directory, verbose=False):
         apk_path (str): The absolute path to the APK file.
         output_directory (str): The directory to save the output file in.
         verbose (bool): Whether to print verbose output.
+        custom_rules_path (str, optional): Path to custom rules JSON file for additional pattern matching.
 
     Returns:
         str: The path to the output file, or None if the operation failed.
@@ -34,6 +35,14 @@ def run_apkleaks(apk_path, output_directory, verbose=False):
         "apkleaks",
         "-f", apk_path
     ]
+    
+    # Add custom rules if provided
+    if custom_rules_path and os.path.exists(custom_rules_path):
+        command.extend(["--pattern", custom_rules_path])
+        if verbose:
+            print(f"📋 Using custom rules from: {custom_rules_path}")
+    elif custom_rules_path and verbose:
+        print(f"⚠️  WARNING: Custom rules file not found: {custom_rules_path}")
 
     try:
         if verbose:
@@ -109,6 +118,7 @@ if __name__ == '__main__':
     parser.add_argument("-f", "--file", required=True, help="Path to the APK file.")
     parser.add_argument("-o", "--output", required=True, help="Directory to save the apkleaks report.")
     parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output.")
+    parser.add_argument("--custom-rules", help="Path to custom rules JSON file for additional pattern matching.")
     args = parser.parse_args()
 
-    run_apkleaks(args.file, args.output, args.verbose)
+    run_apkleaks(args.file, args.output, args.verbose, args.custom_rules)

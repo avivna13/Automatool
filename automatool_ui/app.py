@@ -205,7 +205,7 @@ def execute_action(action_name):
             })
         
         # Validate action name
-        valid_actions = ['full-process', 'get-reviews', 'clean', 'mobsf', 'native-strings-analysis', 'apkleaks', 'scan-base64', 'font-analysis', 'frida-fsmon-scan', 'manifest-analysis', 'decompile-apk', 'apk-unmask-analysis', 'blutter-analysis']
+        valid_actions = ['full-process', 'get-reviews', 'clean', 'mobsf', 'native-strings-analysis', 'apkleaks', 'scan-base64', 'font-analysis', 'frida-fsmon-scan', 'manifest-analysis', 'decompile-apk', 'apk-unmask-analysis', 'blutter-analysis', 'image-steganography-analysis']
         if action_name not in valid_actions:
             return jsonify({
                 'success': False,
@@ -239,6 +239,8 @@ def execute_action(action_name):
             return handle_apk_unmask_analysis()
         elif action_name == 'blutter-analysis':
             return handle_blutter_analysis()
+        elif action_name == 'image-steganography-analysis':
+            return handle_image_steganography_analysis()
         
     except Exception as e:
         return jsonify({
@@ -599,6 +601,83 @@ def handle_font_analysis():
         return jsonify({
             'success': False,
             'message': f'Font analysis failed: {str(e)}',
+            'error': 'UNKNOWN_ERROR'
+        })
+
+
+def handle_image_steganography_analysis():
+    """Handle image steganography detection analysis execution."""
+    try:
+        # Check prerequisites
+        if not app_state.get('setup_complete') or not app_state.get('OUTPUT_DIR'):
+            return jsonify({
+                'success': False,
+                'message': 'Setup not complete. Please upload APK file or configure manual setup first.'
+            })
+        
+        # Get configuration options from request
+        data = request.get_json() or {}
+        threshold_bytes = data.get('threshold_bytes', 10)
+        
+        # Validate threshold
+        if not isinstance(threshold_bytes, int) or threshold_bytes < 1 or threshold_bytes > 1000:
+            return jsonify({
+                'success': False,
+                'message': 'Invalid threshold value. Must be an integer between 1 and 1000.'
+            })
+        
+        # Determine input path - look for extracted APK assets (images)
+        apktool_output = os.path.join(app_state['OUTPUT_DIR'], 'apktool_output')
+        assets_path = os.path.join(apktool_output, 'res')
+        
+        # Check if APK assets exist (from decompilation)
+        if not os.path.exists(assets_path):
+            return jsonify({
+                'success': False,
+                'message': 'APK assets not found. Please run APK decompilation first to extract images.',
+                'error': 'ASSETS_NOT_FOUND'
+            })
+        
+        # Start image steganography analysis
+        success = process_manager.execute_image_steganography_analysis(
+            assets_path,
+            app_state['OUTPUT_DIR'],
+            threshold_bytes=threshold_bytes,
+            verbose=True
+        )
+        
+        if success:
+            return jsonify({
+                'success': True,
+                'message': f'Image steganography analysis started successfully (threshold: {threshold_bytes} bytes)',
+                'action': 'image-steganography-analysis',
+                'config': {
+                    'threshold_bytes': threshold_bytes,
+                    'input_path': assets_path
+                }
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'Failed to start image steganography analysis process'
+            })
+            
+    except FileNotFoundError as e:
+        return jsonify({
+            'success': False,
+            'message': f'Directory not found: {str(e)}',
+            'error': 'DIRECTORY_NOT_FOUND'
+        })
+    except PermissionError as e:
+        return jsonify({
+            'success': False,
+            'message': f'Access denied: {str(e)}',
+            'error': 'ACCESS_DENIED'
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Image steganography analysis failed: {str(e)}',
             'error': 'UNKNOWN_ERROR'
         })
 
