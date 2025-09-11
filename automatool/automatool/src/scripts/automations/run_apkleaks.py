@@ -3,15 +3,16 @@ import subprocess
 import argparse
 from resource_tracker import GlobalResourceTracker
 
-def run_apkleaks(apk_path, output_directory, verbose=False, custom_rules_path=None):
+def run_apkleaks(apk_path, output_directory, verbose=False, custom_rules_path=None, json_output=False):
     """
-    Runs apkleaks on the given APK and saves the output to a JSON file.
+    Runs apkleaks on the given APK and saves the output to a file.
 
     Args:
         apk_path (str): The absolute path to the APK file.
         output_directory (str): The directory to save the output file in.
         verbose (bool): Whether to print verbose output.
         custom_rules_path (str, optional): Path to custom rules JSON file for additional pattern matching.
+        json_output (bool): Whether to output results in JSON format.
 
     Returns:
         str: The path to the output file, or None if the operation failed.
@@ -29,7 +30,9 @@ def run_apkleaks(apk_path, output_directory, verbose=False, custom_rules_path=No
     if verbose:
         print("💧 Running apkleaks analysis...")
 
-    output_file_path = os.path.join(output_directory, "apkleaks_report.txt")
+    # Determine output file extension based on format
+    file_extension = "json" if json_output else "txt"
+    output_file_path = os.path.join(output_directory, f"apkleaks_report.{file_extension}")
     
     command = [
         "apkleaks",
@@ -43,6 +46,15 @@ def run_apkleaks(apk_path, output_directory, verbose=False, custom_rules_path=No
             print(f"📋 Using custom rules from: {custom_rules_path}")
     elif custom_rules_path and verbose:
         print(f"⚠️  WARNING: Custom rules file not found: {custom_rules_path}")
+    
+    # Add JSON output flag if requested
+    if json_output:
+        command.extend(["--json", "-o", output_file_path])
+        if verbose:
+            print(f"📄 JSON output will be saved to: {output_file_path}")
+    else:
+        if verbose:
+            print(f"📄 Text output will be captured to: {output_file_path}")
 
     try:
         if verbose:
@@ -56,9 +68,28 @@ def run_apkleaks(apk_path, output_directory, verbose=False, custom_rules_path=No
             encoding='utf-8'
         )
 
-        # Write the output to the file
-        with open(output_file_path, 'w', encoding='utf-8') as f:
-            f.write(result.stdout)
+        # Handle output based on whether JSON output with -o flag was used
+        if json_output:
+            # APKLeaks already wrote to the file with -o flag, just check if file exists
+            if os.path.exists(output_file_path):
+                if verbose:
+                    print(f"✅ JSON output saved to {output_file_path}")
+                # Print the output to be captured by the UI log
+                print(result.stdout)
+            else:
+                if verbose:
+                    print(f"⚠️  WARNING: Expected output file not found: {output_file_path}")
+                # Fallback: write stdout to file
+                with open(output_file_path, 'w', encoding='utf-8') as f:
+                    f.write(result.stdout)
+        else:
+            # Write the output to the file for text format
+            with open(output_file_path, 'w', encoding='utf-8') as f:
+                f.write(result.stdout)
+            if verbose:
+                print(f"✅ Text output saved to {output_file_path}")
+            # Print the output to be captured by the UI log
+            print(result.stdout)
 
         # Track the output file
         if tracker:
@@ -69,12 +100,6 @@ def run_apkleaks(apk_path, output_directory, verbose=False, custom_rules_path=No
             except Exception as e:
                 if verbose:
                     print(f"⚠️  WARNING: Failed to track output file: {e}")
-
-        if verbose:
-            print(f"✅ apkleaks output saved to {output_file_path}")
-
-        # Print the output to be captured by the UI log
-        print(result.stdout)
 
         return output_file_path
 
@@ -119,6 +144,7 @@ if __name__ == '__main__':
     parser.add_argument("-o", "--output", required=True, help="Directory to save the apkleaks report.")
     parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output.")
     parser.add_argument("--custom-rules", help="Path to custom rules JSON file for additional pattern matching.")
+    parser.add_argument("--json", action="store_true", help="Output results in JSON format.")
     args = parser.parse_args()
 
-    run_apkleaks(args.file, args.output, args.verbose, args.custom_rules)
+    run_apkleaks(args.file, args.output, args.verbose, args.custom_rules, args.json)

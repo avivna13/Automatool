@@ -1,0 +1,25 @@
+{
+    "package": "app.alien.spta.retire",
+    "results": [
+        {
+            "name": "appsflyer_api_keys",
+            "matches": [
+                "e44a8b69c7d76049d312caec6fb8a01b60982d8f"
+            ]
+        },
+        {
+            "name": "onesignal_app_ids",
+            "matches": [
+                "00000000-0000-0000-0000-000000000000",
+                "01528cc0-dd34-494d-9218-24af1317e1ee",
+                "0e5e9c33-f8c3-4568-86c5-2e4f57523f72",
+                "20799a27-fa80-4b36-b2db-0f8141f24180",
+                "4e610cd2-753f-4bfc-9b05-772ce8905c5e",
+                "67bb016b-be40-4c08-a190-96a3f3b503d3",
+                "6c5f504e-8928-47b5-bfb5-73af8d8bf4b4",
+                "7d962ba4-a392-449a-a02d-6c5be5613928",
+                "e4250327-8d3c-4d35-b9e8-3c1720a64b91"
+            ]
+        }
+    ]
+}
