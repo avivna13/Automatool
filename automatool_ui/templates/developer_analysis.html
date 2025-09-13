@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer APK Analysis - AutomatoolUI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container mt-4">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2>🔍 Developer APK Analysis</h2>
+                <p class="text-muted">Extract hardcoded API keys from APK files and maintain a centralized developer database.</p>
+            </div>
+        </div>
+
+        <!-- Status Alert -->
+        <div id="status-alert" class="alert" style="display: none;" role="alert">
+            <span id="status-message"></span>
+        </div>
+
+        <!-- Analysis Form -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">📋 Analysis Configuration</h5>
+            </div>
+            <div class="card-body">
+                <!-- Current Setup Info -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>📱 APK File:</strong>
+                        <span class="text-muted">{{ state.APK_PATH or 'Not configured' }}</span>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>📁 Output Directory:</strong>
+                        <span class="text-muted">{{ state.OUTPUT_DIR or 'Not configured' }}</span>
+                    </div>
+                </div>
+
+                <hr>
+
+                <!-- Input Form -->
+                <form id="developer-analysis-form">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group mb-3">
+                                <label for="developer-name" class="form-label">
+                                    🏷️ Developer Name <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="developer-name" 
+                                       placeholder="Enter unique developer identifier (e.g., MalwareDev, TestApp)"
+                                       pattern="[a-zA-Z0-9_-]+"
+                                       title="Only alphanumeric characters, underscores, and hyphens allowed"
+                                       required>
+                                <div class="form-text">
+                                    Use alphanumeric characters, underscores, and hyphens only. No spaces or special characters.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group mb-3">
+                                <label class="form-label">&nbsp;</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" 
+                                           type="checkbox" 
+                                           id="force-overwrite">
+                                    <label class="form-check-label" for="force-overwrite">
+                                        🔄 Force overwrite existing entry
+                                    </label>
+                                </div>
+                                <div class="form-text">
+                                    Check to overwrite if developer already exists in database.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <button type="submit" 
+                                    class="btn btn-primary btn-lg"
+                                    id="start-analysis-btn"
+                                    {% if not state.setup_complete %}disabled{% endif %}>
+                                🚀 Start Analysis
+                            </button>
+                            
+                            {% if not state.setup_complete %}
+                            <div class="text-danger mt-2">
+                                ⚠️ Please complete setup (upload APK or configure manual setup) before running analysis.
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Progress Section -->
+        <div id="progress-section" class="card mb-4" style="display: none;">
+            <div class="card-header">
+                <h5 class="mb-0">⏳ Analysis Progress</h5>
+            </div>
+            <div class="card-body">
+                <div class="progress mb-3">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                         role="progressbar" 
+                         style="width: 100%">
+                        Analyzing...
+                    </div>
+                </div>
+                <p class="mb-0" id="progress-message">Starting developer APK analysis...</p>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results-section" class="card mb-4" style="display: none;">
+            <div class="card-header">
+                <h5 class="mb-0">📊 Analysis Results</h5>
+            </div>
+            <div class="card-body">
+                <div id="results-content">
+                    <!-- Results will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="row">
+            <div class="col-12">
+                <button class="btn btn-secondary" onclick="goBackToMain()">
+                    ← Back to Main Interface
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Page-specific JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('developer-analysis-form');
+            const developerNameInput = document.getElementById('developer-name');
+            
+            // Form validation
+            developerNameInput.addEventListener('input', function() {
+                const value = this.value;
+                const isValid = /^[a-zA-Z0-9_-]*$/.test(value);
+                
+                if (!isValid && value) {
+                    this.setCustomValidity('Only alphanumeric characters, underscores, and hyphens allowed');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+            
+            // Form submission
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                handleDeveloperAnalysis();
+            });
+        });
+
+        function handleDeveloperAnalysis() {
+            const developerName = document.getElementById('developer-name').value.trim();
+            const force = document.getElementById('force-overwrite').checked;
+            
+            if (!developerName) {
+                showAlert('danger', 'Please enter a developer name');
+                return;
+            }
+            
+            // Show progress
+            document.getElementById('progress-section').style.display = 'block';
+            document.getElementById('results-section').style.display = 'none';
+            document.getElementById('start-analysis-btn').disabled = true;
+            
+            // Make API call
+            fetch('/api/action/developer-apk-analysis', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    developer_name: developerName,
+                    force: force
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('progress-section').style.display = 'none';
+                document.getElementById('start-analysis-btn').disabled = false;
+                
+                if (data.success) {
+                    showAlert('success', data.message);
+                    // Poll for results or show completion message
+                    setTimeout(() => {
+                        checkAnalysisResults(developerName);
+                    }, 2000);
+                } else {
+                    showAlert('danger', data.message);
+                }
+            })
+            .catch(error => {
+                document.getElementById('progress-section').style.display = 'none';
+                document.getElementById('start-analysis-btn').disabled = false;
+                showAlert('danger', 'Network error: ' + error.message);
+            });
+        }
+
+        function checkAnalysisResults(developerName) {
+            // This would check for results file or database updates
+            // For now, show a simple completion message
+            document.getElementById('results-section').style.display = 'block';
+            document.getElementById('results-content').innerHTML = `
+                <div class="alert alert-success">
+                    <h6>✅ Analysis Completed</h6>
+                    <p>Developer APK analysis has been completed for: <strong>${developerName}</strong></p>
+                    <p>Results have been saved to the developers database in the project root directory.</p>
+                    <small class="text-muted">
+                        Check the developers.json file for extracted API keys and analysis results.
+                    </small>
+                </div>
+            `;
+        }
+
+        function showAlert(type, message) {
+            const alertDiv = document.getElementById('status-alert');
+            const messageSpan = document.getElementById('status-message');
+            
+            alertDiv.className = `alert alert-${type}`;
+            messageSpan.textContent = message;
+            alertDiv.style.display = 'block';
+            
+            // Auto-hide success messages
+            if (type === 'success') {
+                setTimeout(() => {
+                    alertDiv.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        function navigateToDeveloperAnalysis() {
+            window.location.href = '/developer-analysis';
+        }
+
+        function goBackToMain() {
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html>

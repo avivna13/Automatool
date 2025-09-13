@@ -64,6 +64,11 @@ def gemini_analysis():
     """Gemini AI analysis page."""
     return render_template('gemini.html', state=app_state)
 
+@app.route('/developer-analysis')
+def developer_analysis_page():
+    """Render the developer APK analysis page."""
+    return render_template('developer_analysis.html', state=app_state)
+
 @app.route('/api/status', methods=['GET'])
 def get_status():
     """Get current process status."""
@@ -205,7 +210,7 @@ def execute_action(action_name):
             })
         
         # Validate action name
-        valid_actions = ['full-process', 'get-reviews', 'clean', 'mobsf', 'native-strings-analysis', 'apkleaks', 'scan-base64', 'font-analysis', 'frida-fsmon-scan', 'manifest-analysis', 'decompile-apk', 'apk-unmask-analysis', 'blutter-analysis', 'image-steganography-analysis']
+        valid_actions = ['full-process', 'get-reviews', 'clean', 'mobsf', 'native-strings-analysis', 'apkleaks', 'scan-base64', 'font-analysis', 'frida-fsmon-scan', 'manifest-analysis', 'decompile-apk', 'apk-unmask-analysis', 'blutter-analysis', 'image-steganography-analysis', 'developer-apk-analysis']
         if action_name not in valid_actions:
             return jsonify({
                 'success': False,
@@ -241,6 +246,8 @@ def execute_action(action_name):
             return handle_blutter_analysis()
         elif action_name == 'image-steganography-analysis':
             return handle_image_steganography_analysis()
+        elif action_name == 'developer-apk-analysis':
+            return handle_developer_apk_analysis()
         
     except Exception as e:
         return jsonify({
@@ -898,6 +905,65 @@ def handle_blutter_analysis():
         return jsonify({
             'success': False,
             'message': f'Blutter analysis failed: {str(e)}'
+        })
+
+
+def handle_developer_apk_analysis():
+    """Handle developer APK analysis execution."""
+    try:
+        # Check prerequisites
+        if not app_state.get('setup_complete') or not app_state.get('APK_PATH') or not app_state.get('OUTPUT_DIR'):
+            return jsonify({
+                'success': False,
+                'message': 'Setup not complete. Please upload APK file or configure manual setup first.'
+            })
+        
+        # Get parameters from request
+        data = request.get_json() or {}
+        developer_name = data.get('developer_name', '').strip()
+        force = data.get('force', False)
+        
+        # Validate developer name
+        if not developer_name:
+            return jsonify({
+                'success': False,
+                'message': 'Developer name is required'
+            })
+        
+        # Validate developer name format (alphanumeric, underscore, hyphen only)
+        import re
+        if not re.match(r'^[a-zA-Z0-9_-]+$', developer_name):
+            return jsonify({
+                'success': False,
+                'message': 'Developer name must contain only alphanumeric characters, underscores, and hyphens'
+            })
+        
+        # Execute analysis
+        success = process_manager.execute_developer_apk_analysis(
+            developer_name,
+            app_state['APK_PATH'],
+            app_state['OUTPUT_DIR'],
+            force=force,
+            verbose=True
+        )
+        
+        if success:
+            return jsonify({
+                'success': True,
+                'message': f'Developer APK analysis started successfully for: {developer_name}',
+                'action': 'developer-apk-analysis',
+                'developer_name': developer_name
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'Failed to start developer APK analysis'
+            })
+            
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Developer APK analysis failed: {str(e)}'
         })
 
 

@@ -523,3 +523,38 @@ class ProcessManager:
             cmd.append('--verbose')
         
         return self._run_process(cmd, "Blutter Flutter Analysis", self.automatool_path, timeout=300)  # 5 min timeout
+
+    def execute_developer_apk_analysis(self, developer_name, apk_path, output_dir, force=False, verbose=True):
+        """
+        Execute developer APK analysis automation.
+        
+        Args:
+            developer_name (str): Unique identifier for the developer
+            apk_path (str): Path to APK file to analyze
+            output_dir (str): Output directory for temporary files
+            force (bool): Overwrite existing developer entry
+            verbose (bool): Enable verbose output
+            
+        Returns:
+            bool: True if process started successfully, False otherwise
+        """
+        script_path = os.path.join("scripts", "automations", "analyze_developer_apk.py")
+        cmd = [
+            'python', script_path,
+            developer_name,
+            apk_path,
+            output_dir
+        ]
+        
+        if force:
+            cmd.append('--force')
+        
+        if verbose:
+            cmd.append('--verbose')
+        
+        return self._run_process(
+            cmd, 
+            "Developer APK Analysis", 
+            self.automatool_path, 
+            timeout=300  # 5 minutes for APKLeaks analysis
+        )

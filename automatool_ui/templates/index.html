@@ -156,6 +156,10 @@
                 title="Analyze Flutter libapp.so files - Results will be tracked for cleanup">
             🦋 Blutter Flutter Analysis
         </button>
+        <button class="btn btn-warning" onclick="navigateToDeveloperAnalysis()"
+                {% if not state.setup_complete %}disabled{% endif %}>
+            🔍 Developer APK Analysis
+        </button>
     </div>
     
     <!-- Process Control Buttons -->

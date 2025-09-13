@@ -844,6 +844,11 @@ class AutomatoolUI {
     }
 }
 
+// Navigation functions
+function navigateToDeveloperAnalysis() {
+    window.location.href = '/developer-analysis';
+}
+
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     new AutomatoolUI();
