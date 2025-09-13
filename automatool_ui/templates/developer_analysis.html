@@ -113,7 +113,17 @@
                         Analyzing...
                     </div>
                 </div>
-                <p class="mb-0" id="progress-message">Starting developer APK analysis...</p>
+                <p class="mb-3" id="progress-message">Starting developer APK analysis...</p>
+                
+                <!-- Live Output Display -->
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">📋 Live Output</h6>
+                    </div>
+                    <div class="card-body">
+                        <pre id="live-output" style="background-color: #f8f9fa; padding: 10px; border-radius: 5px; max-height: 300px; overflow-y: auto; font-size: 0.85em; white-space: pre-wrap;">Waiting for output...</pre>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -180,6 +190,9 @@
             document.getElementById('results-section').style.display = 'none';
             document.getElementById('start-analysis-btn').disabled = true;
             
+            // Update progress message
+            document.getElementById('progress-message').textContent = 'Starting developer APK analysis...';
+            
             // Make API call
             fetch('/api/action/developer-apk-analysis', {
                 method: 'POST',
@@ -193,16 +206,14 @@
             })
             .then(response => response.json())
             .then(data => {
-                document.getElementById('progress-section').style.display = 'none';
-                document.getElementById('start-analysis-btn').disabled = false;
-                
                 if (data.success) {
-                    showAlert('success', data.message);
-                    // Poll for results or show completion message
-                    setTimeout(() => {
-                        checkAnalysisResults(developerName);
-                    }, 2000);
+                    // Process started successfully, now poll for status and output
+                    document.getElementById('progress-message').textContent = 'Analysis in progress... Monitoring output...';
+                    startProcessMonitoring(developerName);
                 } else {
+                    // Failed to start
+                    document.getElementById('progress-section').style.display = 'none';
+                    document.getElementById('start-analysis-btn').disabled = false;
                     showAlert('danger', data.message);
                 }
             })
@@ -213,20 +224,109 @@
             });
         }
 
-        function checkAnalysisResults(developerName) {
-            // This would check for results file or database updates
-            // For now, show a simple completion message
+        let statusPollingInterval = null;
+
+        function startProcessMonitoring(developerName) {
+            // Clear any existing polling
+            if (statusPollingInterval) {
+                clearInterval(statusPollingInterval);
+            }
+            
+            // Start polling for status updates
+            statusPollingInterval = setInterval(() => {
+                pollProcessStatus(developerName);
+            }, 1000); // Poll every second
+            
+            // Initial poll
+            pollProcessStatus(developerName);
+        }
+
+        function pollProcessStatus(developerName) {
+            fetch('/api/status')
+                .then(response => response.json())
+                .then(data => {
+                    const status = data.status;
+                    const log = data.log || [];
+                    
+                    // Update live output
+                    updateLiveOutput(log);
+                    
+                    // Check if process completed
+                    if (status === 'completed') {
+                        // Process completed successfully
+                        clearInterval(statusPollingInterval);
+                        showProcessCompleted(developerName, true);
+                    } else if (status === 'error') {
+                        // Process failed
+                        clearInterval(statusPollingInterval);
+                        showProcessCompleted(developerName, false);
+                    } else if (status === 'ready') {
+                        // Process finished (either success or error)
+                        clearInterval(statusPollingInterval);
+                        // Check the last log entries to determine success/failure
+                        const lastLogEntry = log.length > 0 ? log[log.length - 1] : '';
+                        const isSuccess = lastLogEntry.includes('✅') || lastLogEntry.includes('completed successfully');
+                        showProcessCompleted(developerName, isSuccess);
+                    }
+                    // If status is 'running', continue polling
+                })
+                .catch(error => {
+                    console.error('Error polling status:', error);
+                });
+        }
+
+        function updateLiveOutput(logEntries) {
+            const outputElement = document.getElementById('live-output');
+            if (outputElement && logEntries.length > 0) {
+                // Join all log entries and display them
+                const outputText = logEntries.join('\n');
+                outputElement.textContent = outputText;
+                
+                // Auto-scroll to bottom
+                outputElement.scrollTop = outputElement.scrollHeight;
+            }
+        }
+
+        function showProcessCompleted(developerName, isSuccess) {
+            // Hide progress section
+            document.getElementById('progress-section').style.display = 'none';
+            
+            // Re-enable the button
+            document.getElementById('start-analysis-btn').disabled = false;
+            
+            // Show results
             document.getElementById('results-section').style.display = 'block';
-            document.getElementById('results-content').innerHTML = `
-                <div class="alert alert-success">
-                    <h6>✅ Analysis Completed</h6>
-                    <p>Developer APK analysis has been completed for: <strong>${developerName}</strong></p>
-                    <p>Results have been saved to the developers database in the project root directory.</p>
-                    <small class="text-muted">
-                        Check the developers.json file for extracted API keys and analysis results.
-                    </small>
-                </div>
-            `;
+            
+            if (isSuccess) {
+                showAlert('success', `Developer APK analysis completed successfully for: ${developerName}`);
+                document.getElementById('results-content').innerHTML = `
+                    <div class="alert alert-success">
+                        <h6>✅ Analysis Completed Successfully</h6>
+                        <p>Developer APK analysis has been completed for: <strong>${developerName}</strong></p>
+                        <p>Results have been saved to the developers database in the project root directory.</p>
+                        <small class="text-muted">
+                            Check the developers.json file for extracted API keys and analysis results.
+                        </small>
+                    </div>
+                `;
+            } else {
+                showAlert('danger', `Developer APK analysis failed for: ${developerName}`);
+                document.getElementById('results-content').innerHTML = `
+                    <div class="alert alert-danger">
+                        <h6>❌ Analysis Failed</h6>
+                        <p>Developer APK analysis failed for: <strong>${developerName}</strong></p>
+                        <p>Please check the output above for error details and try again.</p>
+                        <small class="text-muted">
+                            Make sure the APK file is valid and all dependencies are properly configured.
+                        </small>
+                    </div>
+                `;
+            }
+        }
+
+        function checkAnalysisResults(developerName) {
+            // This function is now replaced by the monitoring system
+            // Kept for backward compatibility but not used
         }
 
         function showAlert(type, message) {
@@ -250,8 +350,19 @@
         }
 
         function goBackToMain() {
+            // Clean up polling interval before navigating
+            if (statusPollingInterval) {
+                clearInterval(statusPollingInterval);
+            }
             window.location.href = '/';
         }
+
+        // Clean up polling when page is unloaded
+        window.addEventListener('beforeunload', function() {
+            if (statusPollingInterval) {
+                clearInterval(statusPollingInterval);
+            }
+        });
     </script>
 </body>
 </html>
