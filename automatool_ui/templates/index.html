@@ -79,6 +79,18 @@
 <!-- Analysis Actions -->
 <div class="panel">
     <h2>Analysis Actions</h2>
+    
+    <!-- Image Steganography Configuration -->
+    <div class="form-group" id="image-stego-config" style="display: none; margin-bottom: 15px; padding: 10px; background-color: #f8f9fa; border-radius: 5px;">
+        <label style="font-weight: bold;">🖼️ Image Steganography Detection Options:</label>
+        <div style="margin-top: 8px;">
+            <label for="stego-threshold" style="font-size: 0.9em;">Suspicious Threshold (bytes):</label>
+            <input type="number" id="stego-threshold" value="10" min="1" max="1000" 
+                   style="width: 80px; margin-left: 5px; margin-right: 10px;">
+            <small style="color: #666;">Images with trailing data ≥ this threshold are flagged as suspicious</small>
+        </div>
+    </div>
+    
     <div class="action-buttons">
         <button class="btn btn-primary action-btn" data-action="full-process" 
                 {% if not state.setup_complete %}disabled{% endif %}>
@@ -118,6 +130,10 @@
         <button class="btn btn-primary action-btn" data-action="font-analysis"
                 {% if not state.setup_complete %}disabled{% endif %}>
             🔤 TTF Font Analysis
+        </button>
+        <button class="btn btn-warning action-btn" data-action="image-steganography-analysis"
+                {% if not state.setup_complete %}disabled{% endif %}>
+            🖼️ Image Steganography Analysis
         </button>
         <button class="btn btn-primary action-btn" data-action="frida-fsmon-scan"
                 {% if not state.setup_complete %}disabled{% endif %}>

@@ -183,13 +183,23 @@ class AutomatoolUI {
         const action = e.target.dataset.action;
 
         try {
+            // Prepare request body with configuration for specific actions
+            let requestBody = {};
+            
+            if (action === 'image-steganography-analysis') {
+                // Show configuration panel and get threshold value
+                this.showImageStegoConfig(true);
+                const threshold = parseInt(document.getElementById('stego-threshold').value) || 10;
+                requestBody = { threshold_bytes: threshold };
+            }
+
             this.showLoading(`Starting ${action}...`);
             const response = await fetch(`/api/action/${action}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({})
+                body: JSON.stringify(requestBody)
             });
 
             const result = await response.json();
@@ -205,6 +215,9 @@ class AutomatoolUI {
                     this.showBase64SuccessMessage(result);
                 } else if (action === 'font-analysis') {
                     this.updateStatus('TTF font analysis started...');
+                } else if (action === 'image-steganography-analysis') {
+                    this.updateStatus('Image steganography analysis started...');
+                    this.showImageStegoConfig(false); // Hide config panel after starting
                 }
             } else {
                 this.showMessage('error', result.message);
@@ -339,6 +352,13 @@ class AutomatoolUI {
 
     hideLoading() {
         // Loading is handled by auto-removal of messages
+    }
+
+    showImageStegoConfig(show = true) {
+        const configDiv = document.getElementById('image-stego-config');
+        if (configDiv) {
+            configDiv.style.display = show ? 'block' : 'none';
+        }
     }
 
     async stopProcess() {

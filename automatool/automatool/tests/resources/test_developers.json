@@ -1,0 +1,19 @@
+{
+  "MalwareDev": {
+    "appsflyer_api_keys": [
+      "e44a8b69c7d76049d312caec6fb8a01b60982d8f"
+    ],
+    "onesignal_app_ids": [
+      "00000000-0000-0000-0000-000000000000",
+      "01528cc0-dd34-494d-9218-24af1317e1ee"
+    ],
+    "firebase_api_keys": [
+      "AIzaSyD4E5f6G7h8I9J0kLmN1oP2qR3sT4uV5wX"
+    ]
+  },
+  "LegitimateApp": {
+    "google_maps_api_keys": [
+      "AIzaSyBmaps123456789012345678901234567"
+    ]
+  }
+}
