@@ -135,21 +135,46 @@ def analyze_apk_assets_images_worker(apktool_output_path, target_directory, verb
 
 def find_assets_directory(apktool_output_path, verbose=False):
     """
-    Locate the assets directory within apktool output.
+    Locate the assets or res directory within apktool output.
     
     Returns:
-        str: Path to assets directory, or None if not found
+        str: Path to assets/res directory, or None if not found
     """
+    # Check for assets directory first
     assets_path = os.path.join(apktool_output_path, "assets")
-    
     if os.path.exists(assets_path) and os.path.isdir(assets_path):
         if verbose:
             print(f"[WORKER] Found assets directory: {assets_path}")
         return assets_path
-    else:
+    
+    # Check for res directory (common in APK decompilation)
+    res_path = os.path.join(apktool_output_path, "res")
+    if os.path.exists(res_path) and os.path.isdir(res_path):
         if verbose:
-            print(f"[WORKER] No assets directory found in: {apktool_output_path}")
-        return None
+            print(f"[WORKER] Found res directory: {res_path}")
+        return res_path
+    
+    # If input path itself is a directory with images, use it directly
+    if os.path.isdir(apktool_output_path):
+        # Check if the path itself contains image files
+        supported_extensions = {'.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp'}
+        has_images = False
+        try:
+            for file in os.listdir(apktool_output_path):
+                if os.path.splitext(file.lower())[1] in supported_extensions:
+                    has_images = True
+                    break
+        except (OSError, PermissionError):
+            pass
+        
+        if has_images:
+            if verbose:
+                print(f"[WORKER] Using input directory directly: {apktool_output_path}")
+            return apktool_output_path
+    
+    if verbose:
+        print(f"[WORKER] No assets, res directory, or images found in: {apktool_output_path}")
+    return None
 
 
 def discover_images_in_assets(assets_path, verbose=False):

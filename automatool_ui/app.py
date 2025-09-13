@@ -633,21 +633,20 @@ def handle_image_steganography_analysis():
                 'message': 'Invalid threshold value. Must be an integer between 1 and 1000.'
             })
         
-        # Determine input path - look for extracted APK assets (images)
+        # Determine input path - look for extracted APK output directory
         apktool_output = os.path.join(app_state['OUTPUT_DIR'], 'apktool_output')
-        assets_path = os.path.join(apktool_output, 'res')
         
-        # Check if APK assets exist (from decompilation)
-        if not os.path.exists(assets_path):
+        # Check if APK decompilation output exists
+        if not os.path.exists(apktool_output):
             return jsonify({
                 'success': False,
-                'message': 'APK assets not found. Please run APK decompilation first to extract images.',
-                'error': 'ASSETS_NOT_FOUND'
+                'message': 'APK decompilation output not found. Please run APK decompilation first.',
+                'error': 'APKTOOL_OUTPUT_NOT_FOUND'
             })
         
-        # Start image steganography analysis
+        # Start image steganography analysis (worker will find assets/res directory)
         success = process_manager.execute_image_steganography_analysis(
-            assets_path,
+            apktool_output,
             app_state['OUTPUT_DIR'],
             threshold_bytes=threshold_bytes,
             verbose=True
@@ -660,7 +659,7 @@ def handle_image_steganography_analysis():
                 'action': 'image-steganography-analysis',
                 'config': {
                     'threshold_bytes': threshold_bytes,
-                    'input_path': assets_path
+                    'input_path': apktool_output
                 }
             })
         else:

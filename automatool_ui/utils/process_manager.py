@@ -101,17 +101,19 @@ class ProcessManager:
         return self._run_process(cmd, "TTF Font Analysis", self.automatool_path, timeout=self.default_timeout)
 
     def execute_image_steganography_analysis(self, input_path, output_dir, threshold_bytes=10, verbose=True):
-        """Execute image steganography detection analysis."""
-        script_path = os.path.join("scripts", "automations", "detect_image_steganography.py")
+        """Execute image steganography detection analysis using assets worker."""
+        script_path = os.path.join("scripts", "automations", "_assets_analysis_worker.py")
         cmd = [
             'python', script_path,
-            input_path,
-            output_dir,
+            '--apktool-path', input_path,
+            '--output-dir', output_dir,
             '--threshold', str(threshold_bytes)
         ]
         
         if verbose:
             cmd.append('--verbose')
+        else:
+            cmd.append('--quiet')
         
         return self._run_process(cmd, "Image Steganography Analysis", self.automatool_path, timeout=self.default_timeout)
 
