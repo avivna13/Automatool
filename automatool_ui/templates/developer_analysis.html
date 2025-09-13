@@ -298,17 +298,28 @@
             document.getElementById('results-section').style.display = 'block';
             
             if (isSuccess) {
-                showAlert('success', `Developer APK analysis completed successfully for: ${developerName}`);
-                document.getElementById('results-content').innerHTML = `
-                    <div class="alert alert-success">
-                        <h6>✅ Analysis Completed Successfully</h6>
-                        <p>Developer APK analysis has been completed for: <strong>${developerName}</strong></p>
-                        <p>Results have been saved to the developers database in the project root directory.</p>
-                        <small class="text-muted">
-                            Check the developers.json file for extracted API keys and analysis results.
-                        </small>
-                    </div>
-                `;
+                // Parse the log output to extract developer details
+                const outputElement = document.getElementById('live-output');
+                const logOutput = outputElement ? outputElement.textContent : '';
+                
+                const developerDetails = parseDeveloperDetails(logOutput, developerName);
+                
+                if (developerDetails) {
+                    showAlert('success', `Developer details retrieved successfully for: ${developerName}`);
+                    document.getElementById('results-content').innerHTML = generateDeveloperDetailsHTML(developerDetails);
+                } else {
+                    showAlert('success', `Developer APK analysis completed successfully for: ${developerName}`);
+                    document.getElementById('results-content').innerHTML = `
+                        <div class="alert alert-success">
+                            <h6>✅ Analysis Completed Successfully</h6>
+                            <p>Developer APK analysis has been completed for: <strong>${developerName}</strong></p>
+                            <p>Results have been saved to the developers database in the project root directory.</p>
+                            <small class="text-muted">
+                                Check the developers.json file for extracted API keys and analysis results.
+                            </small>
+                        </div>
+                    `;
+                }
             } else {
                 showAlert('danger', `Developer APK analysis failed for: ${developerName}`);
                 document.getElementById('results-content').innerHTML = `
@@ -322,6 +333,187 @@
                     </div>
                 `;
             }
+        }
+
+        function parseDeveloperDetails(logOutput, developerName) {
+            try {
+                const lines = logOutput.split('\n');
+                let isInDetailsSection = false;
+                let isInApiKeysSection = false;
+                let currentApiType = null;
+                
+                const details = {
+                    developer: developerName,
+                    totalKeys: 0,
+                    categories: 0,
+                    apiKeys: {},
+                    summary: {},
+                    isExisting: false,
+                    isNewAnalysis: false
+                };
+                
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    
+                    // Check if developer already exists
+                    if (line.includes(`Developer '${developerName}' found in database`) || 
+                        line.includes("EXISTING DEVELOPER DETAILS")) {
+                        details.isExisting = true;
+                    }
+                    
+                    // Check if this is a new analysis
+                    if (line.includes("ANALYSIS COMPLETED SUCCESSFULLY") && 
+                        !details.isExisting) {
+                        details.isNewAnalysis = true;
+                    }
+                    
+                    // Parse total keys and categories
+                    if (line.includes('📊 Total API Keys:')) {
+                        const match = line.match(/📊 Total API Keys: (\d+)/);
+                        if (match) details.totalKeys = parseInt(match[1]);
+                    }
+                    
+                    if (line.includes('🔑 API Key Categories:')) {
+                        const match = line.match(/🔑 API Key Categories: (\d+)/);
+                        if (match) details.categories = parseInt(match[1]);
+                    }
+                    
+                    // Parse API keys by type summary
+                    if (line.includes('🔑 API KEYS BY TYPE:')) {
+                        isInDetailsSection = true;
+                        continue;
+                    }
+                    
+                    if (isInDetailsSection && line.includes('📋 DETAILED API KEYS:')) {
+                        isInDetailsSection = false;
+                        isInApiKeysSection = true;
+                        continue;
+                    }
+                    
+                    // Parse summary counts
+                    if (isInDetailsSection && line.includes('•')) {
+                        const match = line.match(/• ([^:]+): (\d+) key\(s\)/);
+                        if (match) {
+                            details.summary[match[1]] = parseInt(match[2]);
+                        }
+                    }
+                    
+                    // Parse detailed API keys
+                    if (isInApiKeysSection) {
+                        if (line.includes(':') && !line.includes('.')) {
+                            // This is an API type header
+                            currentApiType = line.replace(':', '').trim();
+                            details.apiKeys[currentApiType] = [];
+                        } else if (line.match(/^\d+\./)) {
+                            // This is an API key entry
+                            const keyMatch = line.match(/^\d+\.\s+(.+)$/);
+                            if (keyMatch && currentApiType) {
+                                details.apiKeys[currentApiType].push(keyMatch[1]);
+                            }
+                        } else if (line.includes('==========')) {
+                            // End of detailed section
+                            isInApiKeysSection = false;
+                        }
+                    }
+                }
+                
+                // Return details if we found meaningful data
+                if (details.totalKeys > 0 || details.isExisting || details.isNewAnalysis) {
+                    return details;
+                }
+                
+                return null;
+            } catch (error) {
+                console.error('Error parsing developer details:', error);
+                return null;
+            }
+        }
+
+        function generateDeveloperDetailsHTML(details) {
+            const statusClass = details.isExisting ? 'alert-info' : 'alert-success';
+            const statusIcon = details.isExisting ? '📋' : '✅';
+            const statusTitle = details.isExisting ? 'Developer Found in Database' : 'Analysis Completed Successfully';
+            const statusMessage = details.isExisting ? 
+                'This developer already exists in the database. Use the "Force overwrite" option to re-analyze.' :
+                'New developer analysis completed and saved to database.';
+            
+            let html = `
+                <div class="${statusClass}">
+                    <h6>${statusIcon} ${statusTitle}</h6>
+                    <p><strong>Developer:</strong> ${details.developer}</p>
+                    <p>${statusMessage}</p>
+                </div>
+            `;
+            
+            if (details.totalKeys > 0) {
+                html += `
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h6 class="mb-0">📊 API Keys Summary</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <strong>📊 Total API Keys:</strong> <span class="badge bg-primary">${details.totalKeys}</span>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>🔑 Categories:</strong> <span class="badge bg-secondary">${details.categories}</span>
+                                </div>
+                            </div>
+                `;
+                
+                // Add summary by type
+                if (Object.keys(details.summary).length > 0) {
+                    html += '<h6>🔑 API Keys by Type:</h6><div class="row">';
+                    for (const [type, count] of Object.entries(details.summary)) {
+                        html += `
+                            <div class="col-md-6 mb-2">
+                                <span class="text-muted">• ${type}:</span> 
+                                <span class="badge bg-info">${count} key(s)</span>
+                            </div>
+                        `;
+                    }
+                    html += '</div>';
+                }
+                
+                html += '</div></div>';
+                
+                // Add detailed API keys if available
+                if (Object.keys(details.apiKeys).length > 0) {
+                    html += `
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h6 class="mb-0">🔍 Detailed API Keys</h6>
+                            </div>
+                            <div class="card-body">
+                    `;
+                    
+                    for (const [type, keys] of Object.entries(details.apiKeys)) {
+                        if (keys && keys.length > 0) {
+                            html += `
+                                <div class="mb-3">
+                                    <h6 class="text-primary">${type}:</h6>
+                                    <ul class="list-group list-group-flush">
+                            `;
+                            
+                            keys.forEach((key, index) => {
+                                html += `
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <code style="font-size: 0.9em;">${key}</code>
+                                        <span class="badge bg-light text-dark">${index + 1}</span>
+                                    </li>
+                                `;
+                            });
+                            
+                            html += '</ul></div>';
+                        }
+                    }
+                    
+                    html += '</div></div>';
+                }
+            }
+            
+            return html;
         }
 
         function checkAnalysisResults(developerName) {
