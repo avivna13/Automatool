@@ -226,6 +226,42 @@ def print_verbose_final_summary(serializable_data: Dict[str, List[str]], develop
         print(f"\n📊 Total: {total_keys} API keys across {total_types} categories")
 
 
+def display_existing_developer_details(developer_name: str, developer_data: Dict[str, List[str]], verbose: bool = False) -> None:
+    """
+    Display existing developer details from the database.
+    
+    Args:
+        developer_name (str): Developer identifier
+        developer_data (Dict[str, List[str]]): Developer's API key data
+        verbose (bool): Whether to show detailed key listings
+    """
+    print(f"\n📋 EXISTING DEVELOPER DETAILS")
+    print("=" * 60)
+    print(f"🏷️  Developer: {developer_name}")
+    
+    if not developer_data:
+        print("📊 No API keys found for this developer")
+        return
+    
+    total_keys, total_types = calculate_api_key_statistics(developer_data)
+    print(f"📊 Total API Keys: {total_keys}")
+    print(f"🔑 API Key Categories: {total_types}")
+    
+    print(f"\n🔑 API KEYS BY TYPE:")
+    for api_type, keys in developer_data.items():
+        print(f"   • {api_type}: {len(keys)} key(s)")
+    
+    if verbose and developer_data:
+        print(f"\n📋 DETAILED API KEYS:")
+        for api_type, keys in developer_data.items():
+            if keys:
+                print(f"\n   {api_type}:")
+                for i, key in enumerate(keys, 1):
+                    print(f"     {i}. {key}")
+    
+    print("=" * 60)
+
+
 def get_project_root() -> str:
     """
     Get the project root directory (where automation_resources.json and developers.json are located).
@@ -326,9 +362,25 @@ def analyze_developer_apk(
         # Step 3: Check if developer already exists
         if developer_name in developers_data:
             if not force:
-                print(f"⚠️  Developer '{developer_name}' already exists in database")
-                print(f"📄 Use --force flag to overwrite existing entry")
-                return False, {"error": "Developer already exists", "developer": developer_name}
+                print(f"✅ Developer '{developer_name}' found in database")
+                
+                # Display existing developer details
+                existing_data = developers_data[developer_name]
+                display_existing_developer_details(developer_name, existing_data, verbose)
+                
+                print(f"\n💡 Use --force flag to re-analyze and overwrite existing entry")
+                
+                # Return success with existing data
+                total_keys, total_types = calculate_api_key_statistics(existing_data)
+                return True, {
+                    "status": "existing_developer",
+                    "developer": developer_name,
+                    "results": existing_data,
+                    "database_file": developers_file,
+                    "total_api_keys": total_keys,
+                    "api_key_types": list(existing_data.keys()),
+                    "message": "Developer already exists in database"
+                }
             else:
                 print(f"🔄 Overwriting existing entry for developer: {developer_name}")
         
@@ -523,27 +575,40 @@ if __name__ == '__main__':
     # Enhanced output formatting
     print("=" * 60)
     if success:
-        print("🎉 ANALYSIS COMPLETED SUCCESSFULLY")
-        print("=" * 60)
+        status = result.get('status', 'completed')
+        
+        if status == 'existing_developer':
+            print("📋 DEVELOPER FOUND IN DATABASE")
+            print("=" * 60)
+            print(f"ℹ️  {result.get('message', 'Developer already exists in database')}")
+        else:
+            print("🎉 ANALYSIS COMPLETED SUCCESSFULLY")
+            print("=" * 60)
         
         # Display results summary
         if 'results' in result:
             results = result['results']
             total_keys = result.get('total_api_keys', 0)
             
-            print(f"📊 RESULTS SUMMARY:")
-            print(f"   • Total API Keys Found: {total_keys}")
-            print(f"   • API Key Categories: {len(results)}")
-            print(f"   • Database Updated: ✅")
-            
-            if results:
-                print(f"\n🔑 API KEYS BY TYPE:")
-                for api_type, keys in results.items():
-                    print(f"   • {api_type}: {len(keys)} key(s)")
+            if status != 'existing_developer':  # Don't repeat summary for existing developers
+                print(f"📊 RESULTS SUMMARY:")
+                print(f"   • Total API Keys Found: {total_keys}")
+                print(f"   • API Key Categories: {len(results)}")
+                
+                if status == 'completed':
+                    print(f"   • Database Updated: ✅")
+                else:
+                    print(f"   • Database Status: Already exists")
+                
+                if results:
+                    print(f"\n🔑 API KEYS BY TYPE:")
+                    for api_type, keys in results.items():
+                        print(f"   • {api_type}: {len(keys)} key(s)")
             
             print(f"\n📄 Database Location: {result.get('database_file', 'N/A')}")
         
-        if args.verbose and 'results' in result:
+        if args.verbose and 'results' in result and status != 'existing_developer':
+            # Don't repeat detailed results for existing developers as they're already shown
             print(f"\n📋 DETAILED RESULTS:")
             for api_type, keys in result['results'].items():
                 if keys:
